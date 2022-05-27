@@ -1,4 +1,4 @@
-fastart Blogging Platform
+Fastart Blogging Platform
 =========================
 
 Typecho is a Golang Blogging Platform. Simple and Powerful.
