@@ -22,9 +22,7 @@ type FartLogger struct {
 }
 
 func (this *FartLogger) Init() {
-
 	this.openFile()
-
 	expression := "0 0 * * *"
 	cronJob := cron.New()
 	_, err := cronJob.AddFunc(expression, this.maintain)
@@ -50,10 +48,11 @@ func (this *FartLogger) Log(prefix string, format string, v ...interface{}) {
 		line = 0
 	}
 
-	var consoleFormat = fmt.Sprintf("%s%s %s:%d %s", prefix, util.ConvertTimeToTimeString(time.Now()), util.GetFilenameOfPath(file), line, content)
+	var consoleFormat = fmt.Sprintf("%s %s %s:%d %s", prefix, util.ConvertTimeToFileLogerFormatString(time.Now()), util.GetFilenameOfPath(file), line, content)
 	fmt.Printf(consoleFormat)
 
-	this.goLogger.SetPrefix(prefix)
+	this.goLogger.SetPrefix(prefix + " ")
+	this.goLogger.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
 
 	err := this.goLogger.Output(3, content)
 	if err != nil {
@@ -109,7 +108,7 @@ func (this *FartLogger) maintain() {
 	monthAgo := time.Now()
 	monthAgo = monthAgo.AddDate(0, -1, 0)
 	oldDestPath := util.GetLogPath() + "/fart-" + util.ConvertTimeToDateString(monthAgo) + ".log"
-	this.Log("try to delete log file %s", oldDestPath)
+	this.Info("try to delete log file %s", oldDestPath)
 
 	// delete log file
 	exists := util.PathExists(oldDestPath)

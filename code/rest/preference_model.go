@@ -26,25 +26,25 @@ type Preference struct {
 }
 
 const (
-	//scan scope all.
+	// scan scope all.
 	SCAN_SCOPE_ALL = "ALL"
-	//scan scope custom.
+	// scan scope custom.
 	SCAN_SCOPE_CUSTOM = "CUSTOM"
 )
 
-//scan config struct.
+// scan config struct.
 type ScanConfig struct {
-	//whether enable the scan task.
+	// whether enable the scan task.
 	Enable bool `json:"enable"`
-	//when to process the task. five fields. @every 1s
+	// when to process the task. five fields. @every 1s
 	Cron string `json:"cron"`
-	//username
+	// username
 	Usernames []string `json:"usernames"`
-	//scan scope. see SCAN_SCOPE
+	// scan scope. see SCAN_SCOPE
 	Scope string `json:"scope"`
 }
 
-//fetch the scan config
+// fetch the scan config
 func (this *Preference) FetchScanConfig() *ScanConfig {
 
 	json := this.ScanConfig

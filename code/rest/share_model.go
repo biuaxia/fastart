@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	//single file.
+	// single file.
 	SHARE_TYPE_FILE = "FILE"
-	//directory
+	// directory
 	SHARE_TYPE_DIRECTORY = "DIRECTORY"
-	//mix things
+	// mix things
 	SHARE_TYPE_MIX = "MIX"
 )
 

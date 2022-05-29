@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-//cache2go https://github.com/muesli/cache2go
+// cache2go https://github.com/muesli/cache2go
 type Item struct {
-	//read write lock
+	// read write lock
 	sync.RWMutex
 	key  interface{}
 	data interface{}
@@ -18,15 +18,15 @@ type Item struct {
 	duration time.Duration
 	// create time
 	createTime time.Time
-	//last access time
+	// last access time
 	accessTime time.Time
-	//visit times
+	// visit times
 	count int64
 	// callback after deleting
 	deleteCallback func(key interface{})
 }
 
-//create item.
+// create item.
 func NewItem(key interface{}, duration time.Duration, data interface{}) *Item {
 	t := time.Now()
 	return &Item{
@@ -40,7 +40,7 @@ func NewItem(key interface{}, duration time.Duration, data interface{}) *Item {
 	}
 }
 
-//keep alive
+// keep alive
 func (item *Item) KeepAlive() {
 	item.Lock()
 	defer item.Unlock()
@@ -86,7 +86,7 @@ func (item *Item) SetDeleteCallback(f func(interface{})) {
 type Table struct {
 	sync.RWMutex
 
-	//all cache items
+	// all cache items
 	items map[interface{}]*Item
 	// trigger cleanup
 	cleanupTimer *time.Timer
@@ -157,11 +157,11 @@ func (table *Table) checkExpire() {
 	items := table.items
 	table.Unlock()
 
-	//in order to make timer more precise, update now every loop.
+	// in order to make timer more precise, update now every loop.
 	now := time.Now()
 	smallestDuration := 0 * time.Second
 	for key, item := range items {
-		//take out our things, in order not to take the lock.
+		// take out our things, in order not to take the lock.
 		item.RLock()
 		duration := item.duration
 		accessTime := item.accessTime
@@ -172,20 +172,20 @@ func (table *Table) checkExpire() {
 			continue
 		}
 		if now.Sub(accessTime) >= duration {
-			//cache item expired.
+			// cache item expired.
 			_, e := table.Delete(key)
 			if e != nil {
 				table.log("occur error while deleting %v", e.Error())
 			}
 		} else {
-			//find the most possible expire item.
+			// find the most possible expire item.
 			if smallestDuration == 0 || duration-now.Sub(accessTime) < smallestDuration {
 				smallestDuration = duration - now.Sub(accessTime)
 			}
 		}
 	}
 
-	//trigger next clean
+	// trigger next clean
 	table.Lock()
 	table.cleanupInterval = smallestDuration
 	if smallestDuration > 0 {
@@ -212,7 +212,7 @@ func (table *Table) Add(key interface{}, duration time.Duration, data interface{
 		addedItem(item)
 	}
 
-	//find the most possible expire item.
+	// find the most possible expire item.
 	if duration > 0 && (expDur == 0 || duration < expDur) {
 		table.checkExpire()
 	}
@@ -249,7 +249,7 @@ func (table *Table) Delete(key interface{}) (*Item, error) {
 	return r, nil
 }
 
-//check exist.
+// check exist.
 func (table *Table) Exists(key interface{}) bool {
 	table.RLock()
 	defer table.RUnlock()
@@ -258,7 +258,7 @@ func (table *Table) Exists(key interface{}) bool {
 	return ok
 }
 
-//if exist, return false. if not exist add a key and return true.
+// if exist, return false. if not exist add a key and return true.
 func (table *Table) NotFoundAdd(key interface{}, lifeSpan time.Duration, data interface{}) bool {
 	table.Lock()
 
@@ -292,7 +292,7 @@ func (table *Table) Value(key interface{}, args ...interface{}) (*Item, error) {
 	table.RUnlock()
 
 	if ok {
-		//update visit count and visit time.
+		// update visit count and visit time.
 		r.KeepAlive()
 		return r, nil
 	}
@@ -324,7 +324,7 @@ func (table *Table) Truncate() {
 	}
 }
 
-//support table sort
+// support table sort
 type ItemPair struct {
 	Key         interface{}
 	AccessCount int64
@@ -336,7 +336,7 @@ func (p ItemPairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 func (p ItemPairList) Len() int           { return len(p) }
 func (p ItemPairList) Less(i, j int) bool { return p[i].AccessCount > p[j].AccessCount }
 
-//return most visited.
+// return most visited.
 func (table *Table) MostAccessed(count int64) []*Item {
 	table.RLock()
 	defer table.RUnlock()
@@ -368,7 +368,7 @@ func (table *Table) MostAccessed(count int64) []*Item {
 
 // print log.
 func (table *Table) log(format string, v ...interface{}) {
-	//fmt.Printf(format+"\r\n", v)
+	// fmt.Printf(format+"\r\n", v)
 }
 
 func NewTable() *Table {

@@ -55,7 +55,7 @@ func (this *FootprintService) Trace(request *http.Request, duration time.Duratio
 	}
 
 	// ignore password.
-	for key, _ := range params {
+	for key := range params {
 		if key == core.PASSWORD_KEY || key == "password" || key == "adminPassword" {
 			params[key] = []string{"******"}
 		}

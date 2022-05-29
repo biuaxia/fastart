@@ -15,7 +15,7 @@ const (
 	EMPTY_JSON_ARRAY = "[]"
 )
 
-//pager
+// pager
 type Pager struct {
 	Page       int         `json:"page"`
 	PageSize   int         `json:"pageSize"`

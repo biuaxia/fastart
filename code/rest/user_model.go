@@ -5,23 +5,23 @@ import (
 )
 
 const (
-	//guest
+	// guest
 	USER_ROLE_GUEST = "GUEST"
-	//normal user
+	// normal user
 	USER_ROLE_USER = "USER"
-	//administrator
+	// administrator
 	USER_ROLE_ADMINISTRATOR = "ADMINISTRATOR"
 )
 
 const (
-	//ok
+	// ok
 	USER_STATUS_OK = "OK"
-	//disabled
+	// disabled
 	USER_STATUS_DISABLED = "DISABLED"
 )
 
 const (
-	//username pattern
+	// username pattern
 	USERNAME_PATTERN = "^[\\p{Han}0-9a-zA-Z_]+$"
 	USERNAME_DEMO    = "demo"
 )

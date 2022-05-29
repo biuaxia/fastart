@@ -2,10 +2,10 @@ package core
 
 type Logger interface {
 
-	//basic log method
+	// basic log method
 	Log(prefix string, format string, v ...interface{})
 
-	//log with different level.
+	// log with different level.
 	Debug(format string, v ...interface{})
 	Info(format string, v ...interface{})
 	Warn(format string, v ...interface{})

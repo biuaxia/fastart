@@ -42,14 +42,13 @@ type FartApplication struct {
 
 // Start the application.
 func (this *FartApplication) Start() {
-
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Printf("ERROR:%v\r\n", err)
 		}
 	}()
 
-	modePtr := flag.String("mode", this.mode, "cli mode web/mirror/crawl")
+	modePtr := flag.String("mode", this.mode, "cli mode web/version")
 	hostPtr := flag.String("host", this.username, "fart host")
 	usernamePtr := flag.String("username", this.username, "username")
 	passwordPtr := flag.String("password", this.password, "password")
