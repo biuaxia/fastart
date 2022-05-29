@@ -153,7 +153,6 @@ func (this *FartContext) registerBean(bean core.Bean) {
 }
 
 func (this *FartContext) registerBeans() {
-
 	// alien
 	this.registerBean(new(rest.AlienController))
 	this.registerBean(new(rest.AlienService))
@@ -233,7 +232,6 @@ func (this *FartContext) GetBean(bean core.Bean) core.Bean {
 }
 
 func (this *FartContext) initBeans() {
-
 	for _, bean := range this.BeanMap {
 		bean.Init()
 	}

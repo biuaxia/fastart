@@ -18,7 +18,6 @@ type BaseController struct {
 }
 
 func (this *BaseController) Init() {
-
 	this.BaseBean.Init()
 
 	b := core.CONTEXT.GetBean(this.userDao)
@@ -30,11 +29,9 @@ func (this *BaseController) Init() {
 	if b, ok := b.(*SessionDao); ok {
 		this.sessionDao = b
 	}
-
 }
 
 func (this *BaseController) RegisterRoutes() map[string]func(writer http.ResponseWriter, request *http.Request) {
-
 	return make(map[string]func(writer http.ResponseWriter, request *http.Request))
 }
 

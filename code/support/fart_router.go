@@ -49,7 +49,6 @@ func NewRouter() *FartRouter {
 
 	// load Controllers except InstallController
 	for _, controller := range core.CONTEXT.GetControllerMap() {
-
 		if controller == router.installController {
 			routes := controller.RegisterRoutes()
 			for k, v := range routes {
@@ -64,7 +63,6 @@ func NewRouter() *FartRouter {
 
 	}
 	return router
-
 }
 
 // catch global panic.
@@ -138,7 +136,6 @@ func (this *FartRouter) GlobalPanicHandler(writer http.ResponseWriter, request *
 }
 
 func (this *FartRouter) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-
 	startTime := time.Now()
 
 	// global panic handler
@@ -146,7 +143,6 @@ func (this *FartRouter) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 
 	path := request.URL.Path
 	if strings.HasPrefix(path, "/api") {
-
 		// IE browser will cache automatically. disable the cache.
 		util.DisableCache(writer)
 
@@ -191,7 +187,6 @@ func (this *FartRouter) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 		}
 
 	} else {
-
 		// static file.
 		dir := util.GetHtmlPath()
 
@@ -227,5 +222,4 @@ func (this *FartRouter) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 		}
 
 	}
-
 }

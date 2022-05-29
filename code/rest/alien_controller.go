@@ -67,7 +67,6 @@ func (this *AlienController) Init() {
 }
 
 func (this *AlienController) RegisterRoutes() map[string]func(writer http.ResponseWriter, request *http.Request) {
-
 	routeMap := make(map[string]func(writer http.ResponseWriter, request *http.Request))
 
 	routeMap["/api/alien/fetch/upload/token"] = this.Wrap(this.FetchUploadToken, USER_ROLE_USER)
