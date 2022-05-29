@@ -3,8 +3,8 @@ package support
 import (
 	"flag"
 	"fmt"
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/tool/result"
 	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"log"

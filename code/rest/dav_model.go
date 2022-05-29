@@ -2,8 +2,8 @@ package rest
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/tool/dav"
-	"github.com/biuaxia/fastart/code/tool/dav/xml"
+	"github.com/biuaxia/fart/code/tool/dav"
+	"github.com/biuaxia/fart/code/tool/dav/xml"
 	"net/http"
 	"path"
 	"strconv"

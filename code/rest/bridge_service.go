@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fart/code/core"
 )
 
 // @Service

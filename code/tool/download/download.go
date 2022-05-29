@@ -3,8 +3,8 @@ package download
 import (
 	"errors"
 	"fmt"
-	"github.com/biuaxia/fastart/code/tool/result"
-	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fart/code/tool/result"
+	"github.com/biuaxia/fart/code/tool/util"
 	"io"
 	"mime/multipart"
 	"net/http"

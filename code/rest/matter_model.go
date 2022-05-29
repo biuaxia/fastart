@@ -2,10 +2,10 @@ package rest
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/tool/i18n"
-	"github.com/biuaxia/fastart/code/tool/result"
-	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/tool/i18n"
+	"github.com/biuaxia/fart/code/tool/result"
+	"github.com/biuaxia/fart/code/tool/util"
 	jsoniter "github.com/json-iterator/go"
 	"net/http"
 	"regexp"

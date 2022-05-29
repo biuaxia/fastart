@@ -2,7 +2,7 @@ package result
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fart/code/tool/i18n"
 	"net/http"
 	"strconv"
 )

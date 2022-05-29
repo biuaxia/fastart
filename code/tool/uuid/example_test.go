@@ -2,7 +2,7 @@ package uuid_test
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/tool/uuid"
+	"github.com/biuaxia/fart/code/tool/uuid"
 )
 
 func ExampleNewV4() {

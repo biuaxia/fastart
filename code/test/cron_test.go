@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fart/code/core"
 	"github.com/robfig/cron/v3"
 	"log"
 	"testing"

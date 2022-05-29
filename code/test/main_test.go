@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fart/code/tool/util"
 	"strings"
 	"testing"
 	"time"

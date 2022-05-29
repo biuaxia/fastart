@@ -1,6 +1,6 @@
 package rest
 
-import "github.com/biuaxia/fastart/code/core"
+import "github.com/biuaxia/fart/code/core"
 
 // @Service
 type SessionService struct {

@@ -1,9 +1,9 @@
 package support
 
 import (
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/rest"
-	"github.com/biuaxia/fastart/code/tool/cache"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/rest"
+	"github.com/biuaxia/fart/code/tool/cache"
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

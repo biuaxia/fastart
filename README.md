@@ -1,24 +1,24 @@
-Fastart Blogging Platform
+Fart Blogging Platform
 =========================
 
 Typecho is a Golang Blogging Platform. Simple and Powerful.
 
 #### Telegram Channel
 
-https://t.me/fastart
+https://t.me/fart
 
 #### Homepage
 
-http://fastart.org/
+http://fart.org/
 
 #### Documents
 
-http://docs.fastart.org/
+http://docs.fart.org/
 
 #### Community
 
-http://forum.fastart.org/
+http://forum.fart.org/
 
 #### Download
 
-http://fastart.org/download
+http://fart.org/download

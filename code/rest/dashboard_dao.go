@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/tool/builder"
-	"github.com/biuaxia/fastart/code/tool/uuid"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/tool/builder"
+	"github.com/biuaxia/fart/code/tool/uuid"
 	"gorm.io/gorm"
 	"time"
 )

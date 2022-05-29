@@ -2,9 +2,9 @@ package rest
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/tool/result"
-	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/tool/result"
+	"github.com/biuaxia/fart/code/tool/util"
 	"github.com/disintegration/imaging"
 	"image"
 	"net/http"

@@ -3,8 +3,8 @@ package rest
 import (
 	"encoding/json"
 
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/tool/util"
 	"net/http"
 	"time"
 )

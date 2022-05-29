@@ -2,7 +2,7 @@ package util
 
 import (
 	"fmt"
-	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fart/code/tool/result"
 	"go/build"
 	"io"
 	"io/ioutil"

@@ -2,7 +2,7 @@ package util
 
 import (
 	"archive/zip"
-	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fart/code/tool/result"
 	"io"
 	"os"
 	"path/filepath"

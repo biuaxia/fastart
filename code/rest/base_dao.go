@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fart/code/tool/builder"
 )
 
 type BaseDao struct {

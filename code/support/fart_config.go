@@ -1,8 +1,8 @@
 package support
 
 import (
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/tool/util"
 	"github.com/json-iterator/go"
 	"gorm.io/gorm/schema"
 	"io/ioutil"

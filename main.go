@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/biuaxia/fastart/code/core"
-	"github.com/biuaxia/fastart/code/support"
+	"github.com/biuaxia/fart/code/core"
+	"github.com/biuaxia/fart/code/support"
 	_ "gorm.io/driver/mysql"
 )
 

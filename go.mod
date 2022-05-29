@@ -1,4 +1,4 @@
-module github.com/biuaxia/fastart
+module github.com/biuaxia/fart
 
 go 1.18
 

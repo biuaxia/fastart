@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/biuaxia/fastart/code/tool/cache"
+	"github.com/biuaxia/fart/code/tool/cache"
 	"gorm.io/gorm"
 	"net/http"
 )
