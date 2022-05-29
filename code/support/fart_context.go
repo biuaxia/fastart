@@ -29,7 +29,6 @@ type FartContext struct {
 }
 
 func (this *FartContext) Init() {
-
 	// create session cache
 	this.SessionCache = cache.NewTable()
 
@@ -48,7 +47,6 @@ func (this *FartContext) Init() {
 
 	// if the application is installed. Bean's Bootstrap method will be invoked.
 	this.InstallOk()
-
 }
 
 func (this *FartContext) GetDB() *gorm.DB {

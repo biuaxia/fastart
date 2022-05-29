@@ -101,7 +101,6 @@ func (this *ConfigItem) validate() bool {
 }
 
 func (this *FartConfig) Init() {
-
 	// JSON init.
 	jsoniter.RegisterTypeDecoderFunc("time.Time", func(ptr unsafe.Pointer, iter *jsoniter.Iterator) {
 		// if use time.UTC there will be 8 hours gap.
@@ -123,11 +122,9 @@ func (this *FartConfig) Init() {
 	this.serverPort = core.DEFAULT_SERVER_PORT
 
 	this.ReadFromConfigFile()
-
 }
 
 func (this *FartConfig) ReadFromConfigFile() {
-
 	// read from fart.json
 	filePath := util.GetConfPath() + "/fart.json"
 	content, err := ioutil.ReadFile(filePath)
@@ -223,7 +220,6 @@ func (this *FartConfig) NamingStrategy() schema.NamingStrategy {
 
 // TODO: Finish the installation. Write config to fart.json. add sqlite support.
 func (this *FartConfig) FinishInstall(dbType string, mysqlPort int, mysqlHost string, mysqlSchema string, mysqlUsername string, mysqlPassword string, mysqlCharset string) {
-
 	var configItem = &ConfigItem{
 		DbType: dbType,
 		// server port
@@ -251,5 +247,4 @@ func (this *FartConfig) FinishInstall(dbType string, mysqlPort int, mysqlHost st
 	core.PanicError(err)
 
 	this.ReadFromConfigFile()
-
 }

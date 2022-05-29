@@ -175,7 +175,6 @@ func (this *InstallController) closeDbConnection(db *gorm.DB) {
 
 // (tableName, exists, allFields, missingFields)
 func (this *InstallController) getTableMeta(gormDb *gorm.DB, entity interface{}) (string, bool, []*InstallFieldInfo, []*InstallFieldInfo) {
-
 	// get all useful fields from model.
 	entitySchema, err := schema.Parse(entity, &sync.Map{}, core.CONFIG.NamingStrategy())
 	this.PanicError(err)
@@ -228,7 +227,6 @@ func (this *InstallController) getTableMeta(gormDb *gorm.DB, entity interface{})
 }
 
 func (this *InstallController) getTableMetaList(db *gorm.DB) []*InstallTableInfo {
-
 	var installTableInfos []*InstallTableInfo
 
 	for _, iBase := range this.tableNames {
@@ -282,7 +280,6 @@ func (this *InstallController) Verify(writer http.ResponseWriter, request *http.
 }
 
 func (this *InstallController) TableInfoList(writer http.ResponseWriter, request *http.Request) *result.WebResult {
-
 	db := this.openDbConnection(writer, request)
 	defer this.closeDbConnection(db)
 

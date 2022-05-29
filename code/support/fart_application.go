@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"github.com/biuaxia/fart/code/core"
 	"github.com/biuaxia/fart/code/tool/result"
-	jsoniter "github.com/json-iterator/go"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
@@ -81,7 +78,6 @@ func (this *FartApplication) Start() {
 }
 
 func (this *FartApplication) HandleWeb() {
-
 	// Step 1. Logger
 	fartLogger := &FartLogger{}
 	core.LOGGER = fartLogger
@@ -108,100 +104,9 @@ func (this *FartApplication) HandleWeb() {
 	if err1 != nil {
 		log.Fatal("ListenAndServe: ", err1)
 	}
-
-}
-
-func (this *FartApplication) HandleMirror() {
-
-	if this.src == "" {
-		panic("src is required")
-	}
-	if this.dest == "" {
-		panic("dest is required")
-	}
-
-	fmt.Printf("start mirror %s to Fart %s\r\n", this.src, this.dest)
-
-	urlString := fmt.Sprintf("%s/api/matter/mirror", this.host)
-
-	params := url.Values{
-		"srcPath":         {this.src},
-		"destPath":        {this.dest},
-		"overwrite":       {fmt.Sprintf("%v", this.overwrite)},
-		core.USERNAME_KEY: {this.username},
-		core.PASSWORD_KEY: {this.password},
-	}
-
-	response, err := http.PostForm(urlString, params)
-	core.PanicError(err)
-
-	bodyBytes, err := ioutil.ReadAll(response.Body)
-
-	webResult := &result.WebResult{}
-
-	err = jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(bodyBytes, webResult)
-	if err != nil {
-		fmt.Printf("error response format %s \r\n", err.Error())
-		return
-	}
-
-	if webResult.Code == result.OK.Code {
-		fmt.Println("success")
-	} else {
-		fmt.Printf("error %s\r\n", webResult.Msg)
-	}
-
-}
-
-func (this *FartApplication) HandleCrawl() {
-
-	if this.src == "" {
-		panic("src is required")
-	}
-	if this.dest == "" {
-		panic("dest is required")
-	}
-
-	if this.filename == "" {
-		panic("filename is required")
-	}
-
-	fmt.Printf("crawl %s to Fart %s\r\n", this.src, this.dest)
-
-	urlString := fmt.Sprintf("%s/api/matter/crawl", this.host)
-
-	params := url.Values{
-		"url":             {this.src},
-		"destPath":        {this.dest},
-		"filename":        {this.filename},
-		core.USERNAME_KEY: {this.username},
-		core.PASSWORD_KEY: {this.password},
-	}
-
-	response, err := http.PostForm(urlString, params)
-	core.PanicError(err)
-
-	bodyBytes, err := ioutil.ReadAll(response.Body)
-
-	webResult := &result.WebResult{}
-
-	err = jsoniter.ConfigCompatibleWithStandardLibrary.Unmarshal(bodyBytes, webResult)
-	if err != nil {
-		fmt.Printf("Error response format %s \r\n", err.Error())
-		return
-	}
-
-	if webResult.Code == result.OK.Code {
-		fmt.Println("success")
-	} else {
-		fmt.Printf("error %s\r\n", webResult.Msg)
-	}
-
 }
 
 // fetch the application version
 func (this *FartApplication) HandleVersion() {
-
 	fmt.Printf("Fart %s\r\n", core.VERSION)
-
 }
