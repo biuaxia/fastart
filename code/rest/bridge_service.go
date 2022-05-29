@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
+	"github.com/biuaxia/fastart/code/core"
 )
 
-//@Service
+// @Service
 type BridgeService struct {
 	BaseBean
 	bridgeDao *BridgeDao

@@ -1,17 +1,17 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"math"
 	"net/http"
 	"strings"
 	"time"
 )
 
-//@Service
+// @Service
 type ShareService struct {
 	BaseBean
 	shareDao  *ShareDao
@@ -56,9 +56,9 @@ func (this *ShareService) Detail(uuid string) *Share {
 func (this *ShareService) CheckShare(request *http.Request, shareUuid string, code string, user *User) *Share {
 
 	share := this.shareDao.CheckByUuid(shareUuid)
-	//if self, not need shareCode
+	// if self, not need shareCode
 	if user == nil || user.Uuid != share.UserUuid {
-		//if not login or not self's share, shareCode is required.
+		// if not login or not self's share, shareCode is required.
 		if code == "" {
 			panic(result.CustomWebResultI18n(request, result.NEED_SHARE_CODE, i18n.ShareCodeRequired))
 		} else if share.Code != code {
@@ -74,14 +74,14 @@ func (this *ShareService) CheckShare(request *http.Request, shareUuid string, co
 	return share
 }
 
-//check whether a user can access a matter. shareRootUuid is matter's parent(or parent's parent and so on)
+// check whether a user can access a matter. shareRootUuid is matter's parent(or parent's parent and so on)
 func (this *ShareService) ValidateMatter(request *http.Request, shareUuid string, code string, user *User, shareRootUuid string, matter *Matter) {
 
 	if matter == nil {
 		panic(result.Unauthorized("matter cannot be nil"))
 	}
 
-	//if self's matter, ok.
+	// if self's matter, ok.
 	if user != nil && matter.UserUuid == user.Uuid {
 		return
 	}
@@ -92,13 +92,18 @@ func (this *ShareService) ValidateMatter(request *http.Request, shareUuid string
 
 	share := this.CheckShare(request, shareUuid, code, user)
 
-	//if shareRootUuid is root. Bridge must has record.
+	shareOwner := this.userDao.FindByUuid(share.UserUuid)
+	if shareOwner.Status == USER_STATUS_DISABLED {
+		panic(result.BadRequestI18n(request, i18n.UserDisabled))
+	}
+
+	// if shareRootUuid is root. Bridge must has record.
 	if shareRootUuid == MATTER_ROOT {
 
 		this.bridgeDao.CheckByShareUuidAndMatterUuid(share.Uuid, matter.Uuid)
 
 	} else {
-		//check whether shareRootMatter is being sharing
+		// check whether shareRootMatter is being sharing
 		shareRootMatter := this.matterDao.CheckByUuid(shareRootUuid)
 		this.bridgeDao.CheckByShareUuidAndMatterUuid(share.Uuid, shareRootMatter.Uuid)
 
@@ -111,10 +116,10 @@ func (this *ShareService) ValidateMatter(request *http.Request, shareUuid string
 
 }
 
-//delete user's shares and corresponding bridges.
+// delete user's shares and corresponding bridges.
 func (this *ShareService) DeleteSharesByUser(request *http.Request, currentUser *User) {
 
-	//delete share and bridges.
+	// delete share and bridges.
 	pageSize := 100
 	var sortArray []builder.OrderPair
 	count, _ := this.shareDao.PlainPage(0, pageSize, currentUser.Uuid, sortArray)
@@ -127,7 +132,7 @@ func (this *ShareService) DeleteSharesByUser(request *http.Request, currentUser 
 			for _, share := range shares {
 				this.bridgeDao.DeleteByShareUuid(share.Uuid)
 
-				//delete this share
+				// delete this share
 				this.shareDao.Delete(share)
 			}
 		}

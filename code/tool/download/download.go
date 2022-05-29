@@ -3,8 +3,8 @@ package download
 import (
 	"errors"
 	"fmt"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -41,7 +41,7 @@ func (w *CountingWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-//检查Last-Modified头。返回true: 请求已经完成了。（言下之意，文件没有修改过） 返回false：文件修改过。
+// 检查Last-Modified头。返回true: 请求已经完成了。（言下之意，文件没有修改过） 返回false：文件修改过。
 func CheckLastModified(w http.ResponseWriter, r *http.Request, modifyTime time.Time) bool {
 	if modifyTime.IsZero() {
 		return false
@@ -211,7 +211,7 @@ func PanicError(err error) {
 	}
 }
 
-//file download. https://github.com/Masterminds/go-fileserver
+// file download. https://github.com/Masterminds/go-fileserver
 func DownloadFile(
 	writer http.ResponseWriter,
 	request *http.Request,
@@ -227,7 +227,7 @@ func DownloadFile(
 		PanicError(e)
 	}()
 
-	//content-disposition tell browser to download rather than preview.
+	// content-disposition tell browser to download rather than preview.
 	if withContentDisposition {
 		fileName := url.QueryEscape(filename)
 		writer.Header().Set("content-disposition", "attachment; filename=\""+fileName+"\"")
@@ -259,7 +259,7 @@ func DownloadFile(
 	ctypes, haveType := writer.Header()["Content-Type"]
 	var ctype string
 	if !haveType {
-		//get mime
+		// get mime
 		ctype = util.GetFallbackMimeType(filename, "")
 		if ctype == "" {
 			// read a chunk to decide between utf-8 text and binary

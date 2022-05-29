@@ -2,10 +2,10 @@ package rest
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"github.com/json-iterator/go"
 	"go/types"
 	"net/http"
@@ -44,9 +44,7 @@ func (this *BaseController) HandleRoutes(writer http.ResponseWriter, request *ht
 }
 
 // wrap the handle method.
-func (this *BaseController) Wrap(
-	f func(writer http.ResponseWriter, request *http.Request) *result.WebResult,
-	qualifiedRole string) func(w http.ResponseWriter, r *http.Request) {
+func (this *BaseController) Wrap(f func(writer http.ResponseWriter, request *http.Request) *result.WebResult, qualifiedRole string) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 

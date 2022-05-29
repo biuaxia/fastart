@@ -16,7 +16,7 @@ import (
 	"strings"
 	"testing"
 
-	ixml "github.com/eyebluecn/tank/code/tool/webdav/internal/xml"
+	ixml "github.com/biuaxia/fastart/code/tool/webdav/internal/xml"
 )
 
 func TestReadLockInfo(t *testing.T) {
@@ -349,7 +349,7 @@ func TestReadPropfind(t *testing.T) {
 }
 
 func TestMultistatusWriter(t *testing.T) {
-	///The "section x.y.z" test cases come from section x.y.z of the spec at
+	// /The "section x.y.z" test cases come from section x.y.z of the spec at
 	// http://www.webdav.org/specs/rfc4918.html
 	testCases := []struct {
 		desc        string

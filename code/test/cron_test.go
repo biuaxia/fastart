@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
+	"github.com/biuaxia/fastart/code/core"
 	"github.com/robfig/cron/v3"
 	"log"
 	"testing"
@@ -17,7 +17,7 @@ func TestEveryOneSecondCron(t *testing.T) {
 	var c *cron.Cron
 	var spec string
 	if customMethod {
-		//use custom cron. every 1 second.
+		// use custom cron. every 1 second.
 		c = cron.New(cron.WithSeconds())
 		spec = "*/1 * * * * ?"
 	} else {
@@ -52,7 +52,7 @@ func TestSimpleCron(t *testing.T) {
 	var c *cron.Cron
 	var spec string
 
-	//新标准。
+	// 新标准。
 	c = cron.New()
 	spec = "@every 2s"
 

@@ -3,10 +3,10 @@ package rest
 import (
 	"bytes"
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -71,7 +71,7 @@ func (this *DavController) Init() {
 	}
 }
 
-//Auth user by BasicAuth
+// Auth user by BasicAuth
 func (this *DavController) CheckCurrentUser(writer http.ResponseWriter, request *http.Request) *User {
 
 	username, password, ok := request.BasicAuth()
@@ -100,19 +100,19 @@ func (this *DavController) RegisterRoutes() map[string]func(writer http.Response
 	return routeMap
 }
 
-//handle some special routes, eg. params in the url.
+// handle some special routes, eg. params in the url.
 func (this *DavController) HandleRoutes(writer http.ResponseWriter, request *http.Request) (func(writer http.ResponseWriter, request *http.Request), bool) {
 
 	path := request.URL.Path
 
-	//match /api/dav{subPath}
+	// match /api/dav{subPath}
 	pattern := fmt.Sprintf(`^%s(.*)$`, WEBDAV_PREFIX)
 	reg := regexp.MustCompile(pattern)
 	strs := reg.FindStringSubmatch(path)
 	if len(strs) == 2 {
 		var f = func(writer http.ResponseWriter, request *http.Request) {
 			subPath := strs[1]
-			//guarantee subPath not end with /
+			// guarantee subPath not end with /
 			subPath = strings.TrimSuffix(subPath, "/")
 			this.Index(writer, request, subPath)
 		}
@@ -124,7 +124,7 @@ func (this *DavController) HandleRoutes(writer http.ResponseWriter, request *htt
 
 func (this *DavController) debug(writer http.ResponseWriter, request *http.Request, subPath string) {
 
-	//Print the Request info.
+	// Print the Request info.
 	fmt.Printf("\n------  %s  --  %s  ------\n", request.URL, subPath)
 
 	fmt.Printf("\n------Method：------\n")
@@ -141,7 +141,7 @@ func (this *DavController) debug(writer http.ResponseWriter, request *http.Reque
 	}
 
 	fmt.Printf("\n------Body：------\n")
-	//ioutil.ReadAll cannot read again. when read again, there is nothing.
+	// ioutil.ReadAll cannot read again. when read again, there is nothing.
 
 	bodyBytes, err := ioutil.ReadAll(request.Body)
 	if err != nil {
@@ -149,7 +149,7 @@ func (this *DavController) debug(writer http.ResponseWriter, request *http.Reque
 	}
 	fmt.Println(string(bodyBytes))
 
-	//close and resign
+	// close and resign
 	err = request.Body.Close()
 	if err != nil {
 		panic(err)
@@ -162,8 +162,8 @@ func (this *DavController) debug(writer http.ResponseWriter, request *http.Reque
 
 func (this *DavController) Index(writer http.ResponseWriter, request *http.Request, subPath string) {
 
-	//when debugging. open it.
-	//this.debug(writer, request, subPath)
+	// when debugging. open it.
+	// this.debug(writer, request, subPath)
 
 	user := this.CheckCurrentUser(writer, request)
 

@@ -2,10 +2,10 @@ package rest
 
 import (
 	"fmt"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"github.com/disintegration/imaging"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
 	"image"
 	"net/http"
 	"os"
@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-//@Service
+// @Service
 type ImageCacheService struct {
 	BaseBean
 	imageCacheDao *ImageCacheDao
@@ -54,7 +54,7 @@ func (this *ImageCacheService) ResizeParams(request *http.Request) (needProcess 
 	var err error
 
 	if request.FormValue("ir") != "" {
-		//mode_w_h  if w or h equal means not required.
+		// mode_w_h  if w or h equal means not required.
 		imageResizeStr := request.FormValue("ir")
 		arr := strings.Split(imageResizeStr, "_")
 		if len(arr) != 3 {
@@ -92,7 +92,7 @@ func (this *ImageCacheService) ResizeParams(request *http.Request) (needProcess 
 
 }
 
-//resize image.
+// resize image.
 func (this *ImageCacheService) ResizeImage(request *http.Request, filePath string) *image.NRGBA {
 
 	diskFile, err := os.Open(filePath)
@@ -105,16 +105,16 @@ func (this *ImageCacheService) ResizeImage(request *http.Request, filePath strin
 	_, imageResizeM, imageResizeW, imageResizeH := this.ResizeParams(request)
 
 	if imageResizeM == "fit" {
-		//fit mode.
+		// fit mode.
 		if imageResizeW != 0 {
-			//eg. width = 100 height auto in proportion
+			// eg. width = 100 height auto in proportion
 
 			src, err := imaging.Decode(diskFile)
 			this.PanicError(err)
 			return imaging.Resize(src, imageResizeW, 0, imaging.Lanczos)
 
 		} else if imageResizeH != 0 {
-			//eg. height = 100 width auto in proportion
+			// eg. height = 100 width auto in proportion
 
 			src, err := imaging.Decode(diskFile)
 			this.PanicError(err)
@@ -124,7 +124,7 @@ func (this *ImageCacheService) ResizeImage(request *http.Request, filePath strin
 			panic(result.BadRequest("mode fit required width or height"))
 		}
 	} else if imageResizeM == "fill" {
-		//fill mode. specify the width and height
+		// fill mode. specify the width and height
 		if imageResizeW > 0 && imageResizeH > 0 {
 			src, err := imaging.Decode(diskFile)
 			this.PanicError(err)
@@ -134,7 +134,7 @@ func (this *ImageCacheService) ResizeImage(request *http.Request, filePath strin
 			panic(result.BadRequest("mode fill required width and height"))
 		}
 	} else if imageResizeM == "fixed" {
-		//fixed mode
+		// fixed mode
 		if imageResizeW > 0 && imageResizeH > 0 {
 			src, err := imaging.Decode(diskFile)
 			this.PanicError(err)
@@ -148,10 +148,10 @@ func (this *ImageCacheService) ResizeImage(request *http.Request, filePath strin
 	}
 }
 
-//cache an image
+// cache an image
 func (this *ImageCacheService) cacheImage(writer http.ResponseWriter, request *http.Request, matter *Matter) *ImageCache {
 
-	//only these image can do.
+	// only these image can do.
 	extension := util.GetExtension(matter.Name)
 	formats := map[string]imaging.Format{
 		".jpg":  imaging.JPEG,
@@ -179,7 +179,7 @@ func (this *ImageCacheService) cacheImage(writer http.ResponseWriter, request *h
 	cacheImageRelativePath := util.GetSimpleFileName(matter.Path) + "_" + mode + extension
 	cacheImageAbsolutePath := GetUserCacheRootDir(user.Username) + util.GetSimpleFileName(matter.Path) + "_" + mode + extension
 
-	//create directory
+	// create directory
 	dir := filepath.Dir(cacheImageAbsolutePath)
 	util.MakeDirAll(dir)
 
@@ -190,7 +190,7 @@ func (this *ImageCacheService) cacheImage(writer http.ResponseWriter, request *h
 		this.PanicError(e)
 	}()
 
-	//store on disk after handle
+	// store on disk after handle
 	err = imaging.Encode(fileWriter, dstImage, format)
 	this.PanicError(err)
 

@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"strings"
 	"testing"
 	"time"

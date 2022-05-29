@@ -1,13 +1,13 @@
 [Unit]
-Description=EyeblueTank
-Documentation=https://tank-doc.eyeblue.cn
+Description=Fart
+Documentation=http://docs.fastart.org
 Wants=network.target
 After=network.target
 
 [Service]
 Type=simple
 #DynamicUser=yes
-ExecStart=/data/program/tank/tank
+ExecStart=/data/program/fart/fart
 Restart=always
 RestartSec=3
 

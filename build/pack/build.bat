@@ -1,7 +1,7 @@
 @if "%DEBUG%" == "" ECHO off
 @REM ##########################################################################
 @REM
-@REM  Fastart build script for Windows
+@REM  Fart build script for Windows
 @REM  manual https://ss64.com/nt/
 @REM
 @REM ##########################################################################
@@ -11,7 +11,7 @@
 @REM prepare the variables.
 
 @REM  version name
-SET VERSION_NAME=fastart-3.1.5
+SET VERSION_NAME=fart-1.0.0
 ECHO VERSION_NAME: %VERSION_NAME%
 @REM  golang proxy
 SET GOPROXY=https://goproxy.cn
@@ -25,36 +25,35 @@ ECHO GOPATH: %GOPATH%
 @REM  eg. windows
 FOR /f %%i IN ('go env GOOS') DO SET GOOS=%%i
 ECHO GOOS: %GOOS%
-@REM  service dir eg. D:\Group\biuaxia\fastart\build\pack
+@REM  service dir eg. D:\Group\biuaxia\fart\build\pack
 SET PACK_DIR=%CD%
 ECHO PACK_DIR: %PACK_DIR%
-@REM  build dir eg. D:\Group\biuaxia\fastart\build
+@REM  build dir eg. D:\Group\biuaxia\fart\build
 FOR %%F IN (%CD%) DO SET BUILD_DIR_SLASH=%%~dpF
 SET BUILD_DIR=%BUILD_DIR_SLASH:~0,-1%
 ECHO BUILD_DIR: %BUILD_DIR%
-@REM project dir eg. D:\Group\biuaxia\fastart
+@REM project dir eg. D:\Group\biuaxia\fart
 FOR %%F IN (%BUILD_DIR%) DO SET PROJECT_DIR_SLASH=%%~dpF
 SET PROJECT_DIR=%PROJECT_DIR_SLASH:~0,-1%
 ECHO PROJECT_DIR: %PROJECT_DIR%
 
-@REM  final zip file name. eg. fastart-x.x.x.windows-amd64.zip
+@REM  final zip file name. eg. fart-x.x.x.windows-amd64.zip
 SET FILE_NAME=%VERSION_NAME%.%GOOS%-%GOARCH%.zip
 ECHO FILE_NAME: %FILE_NAME%
-@REM  zip dist dir eg. D:\Group\biuaxia\fastart\tmp\dist
+@REM  zip dist dir eg. D:\Group\biuaxia\fart\tmp\dist
 SET DIST_DIR=%PROJECT_DIR%\tmp\dist
 ECHO DIST_DIR: %DIST_DIR%
-@REM  component dir eg. D:\Group\biuaxia\fastart\tmp\dist\fastart-x.x.x
+@REM  component dir eg. D:\Group\biuaxia\fart\tmp\dist\fart-x.x.x
 SET COMPONENT_DIR=%DIST_DIR%\%VERSION_NAME%
 ECHO COMPONENT_DIR: %COMPONENT_DIR%
-@REM  final dist path eg. D:\Group\biuaxia\fastart\tmp\dist\fastart-x.x.x.windows-amd64.zip
+@REM  final dist path eg. D:\Group\biuaxia\fart\tmp\dist\fart-x.x.x.windows-amd64.zip
 SET DIST_PATH=%DIST_DIR%\%FILE_NAME%
 ECHO DIST_PATH: %DIST_PATH%
 
 cd %PROJECT_DIR%
 
 ECHO go build -mod=readonly
-go build -mod=readonly
-
+go build -mod=readonly -o fart.exe
 
 IF EXIST %COMPONENT_DIR% (
     rmdir /s/q %COMPONENT_DIR%
@@ -64,8 +63,8 @@ IF EXIST %COMPONENT_DIR% (
 )
 
 
-ECHO copy .\fastart.exe %COMPONENT_DIR%
-copy .\fastart.exe %COMPONENT_DIR%
+ECHO copy .\fart.exe %COMPONENT_DIR%
+copy .\fart.exe %COMPONENT_DIR%
 
 ECHO %BUILD_DIR%\conf %COMPONENT_DIR%\conf /E/H/I
 xcopy %BUILD_DIR%\conf %COMPONENT_DIR%\conf /E/H/I

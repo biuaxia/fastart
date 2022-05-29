@@ -1,23 +1,23 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/cache"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/cache"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"net/http"
 	"os"
 	"time"
 )
 
-//@Service
+// @Service
 type UserService struct {
 	BaseBean
 	userDao    *UserDao
 	sessionDao *SessionDao
 
-	//file lock
+	// file lock
 	locker *cache.Table
 
 	matterDao        *MatterDao
@@ -78,11 +78,11 @@ func (this *UserService) Init() {
 		this.footprintDao = b
 	}
 
-	//create a lock cache.
+	// create a lock cache.
 	this.locker = cache.NewTable()
 }
 
-//lock a user's operation. If lock, user cannot operate file.
+// lock a user's operation. If lock, user cannot operate file.
 func (this *UserService) MatterLock(userUuid string) {
 
 	cacheItem, err := this.locker.Value(userUuid)
@@ -98,7 +98,7 @@ func (this *UserService) MatterLock(userUuid string) {
 	this.locker.Add(userUuid, duration, true)
 }
 
-//unlock
+// unlock
 func (this *UserService) MatterUnlock(userUuid string) {
 
 	exist := this.locker.Exists(userUuid)
@@ -110,8 +110,8 @@ func (this *UserService) MatterUnlock(userUuid string) {
 	}
 }
 
-//load session to SessionCache. This method will be invoked in every request.
-//authorize by 1. cookie 2. username and password in request form. 3. Basic Auth
+// load session to SessionCache. This method will be invoked in every request.
+// authorize by 1. cookie 2. username and password in request form. 3. Basic Auth
 func (this *UserService) PreHandle(writer http.ResponseWriter, request *http.Request) {
 
 	sessionId := util.GetSessionUuidFromRequest(request, core.COOKIE_AUTH_KEY)
@@ -123,7 +123,7 @@ func (this *UserService) PreHandle(writer http.ResponseWriter, request *http.Req
 			this.logger.Error("occur error will get session cache %s", err.Error())
 		}
 
-		//if no cache. try to find in db.
+		// if no cache. try to find in db.
 		if cacheItem == nil || cacheItem.Data() == nil {
 			session := this.sessionDao.FindByUuid(sessionId)
 			if session != nil {
@@ -142,7 +142,7 @@ func (this *UserService) PreHandle(writer http.ResponseWriter, request *http.Req
 		}
 	}
 
-	//try to auth by USERNAME_KEY PASSWORD_KEY
+	// try to auth by USERNAME_KEY PASSWORD_KEY
 	cacheItem, err := core.CONTEXT.GetSessionCache().Value(sessionId)
 	if err != nil {
 		this.logger.Error("occur error will get session cache %s", err.Error())
@@ -152,7 +152,7 @@ func (this *UserService) PreHandle(writer http.ResponseWriter, request *http.Req
 		username := request.FormValue(core.USERNAME_KEY)
 		password := request.FormValue(core.PASSWORD_KEY)
 
-		//try to read from BasicAuth
+		// try to read from BasicAuth
 		if username == "" || password == "" {
 			username, password, _ = request.BasicAuth()
 		}
@@ -182,11 +182,11 @@ func (this *UserService) PreHandle(writer http.ResponseWriter, request *http.Req
 
 }
 
-//find a cache user by its userUuid
+// find a cache user by its userUuid
 func (this *UserService) FindCacheUsersByUuid(userUuid string) []*User {
 
 	var users []*User
-	//let session user work.
+	// let session user work.
 	core.CONTEXT.GetSessionCache().Foreach(func(key interface{}, cacheItem *cache.Item) {
 		if cacheItem == nil || cacheItem.Data() == nil {
 			return
@@ -204,11 +204,11 @@ func (this *UserService) FindCacheUsersByUuid(userUuid string) []*User {
 	return users
 }
 
-//remove cache user by its userUuid
+// remove cache user by its userUuid
 func (this *UserService) RemoveCacheUserByUuid(userUuid string) {
 
 	var sessionId interface{}
-	//let session user work.
+	// let session user work.
 	core.CONTEXT.GetSessionCache().Foreach(func(key interface{}, cacheItem *cache.Item) {
 		if cacheItem == nil || cacheItem.Data() == nil {
 			return
@@ -233,46 +233,46 @@ func (this *UserService) RemoveCacheUserByUuid(userUuid string) {
 	}
 }
 
-//delete user
+// delete user
 func (this *UserService) DeleteUser(request *http.Request, currentUser *User) {
 
-	//delete from cache
+	// delete from cache
 	this.logger.Info("delete from cache userUuid = %s", currentUser.Uuid)
 	this.RemoveCacheUserByUuid(currentUser.Uuid)
 
-	//delete download tokens
+	// delete download tokens
 	this.logger.Info("delete download tokens")
 	this.downloadTokenDao.DeleteByUserUuid(currentUser.Uuid)
 
-	//delete upload tokens
+	// delete upload tokens
 	this.logger.Info("delete upload tokens")
 	this.uploadTokenDao.DeleteByUserUuid(currentUser.Uuid)
 
-	//delete footprints
+	// delete footprints
 	this.logger.Info("delete footprints")
 	this.footprintDao.DeleteByUserUuid(currentUser.Uuid)
 
-	//delete session
+	// delete session
 	this.logger.Info("delete session")
 	this.sessionDao.DeleteByUserUuid(currentUser.Uuid)
 
-	//delete shares and bridges
+	// delete shares and bridges
 	this.logger.Info("elete shares and bridges")
 	this.shareService.DeleteSharesByUser(request, currentUser)
 
-	//delete caches
+	// delete caches
 	this.logger.Info("delete caches")
 	this.imageCacheDao.DeleteByUserUuid(currentUser.Uuid)
 
-	//delete matters
+	// delete matters
 	this.logger.Info("delete matters")
 	this.matterDao.DeleteByUserUuid(currentUser.Uuid)
 
-	//delete this user
+	// delete this user
 	this.logger.Info("delete this user.")
 	this.userDao.Delete(currentUser)
 
-	//delete files from disk.
+	// delete files from disk.
 	this.logger.Info("delete files from disk. %s", GetUserSpaceRootDir(currentUser.Username))
 	err := os.RemoveAll(GetUserSpaceRootDir(currentUser.Username))
 	this.PanicError(err)

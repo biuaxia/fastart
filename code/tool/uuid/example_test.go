@@ -2,7 +2,7 @@ package uuid_test
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 )
 
 func ExampleNewV4() {

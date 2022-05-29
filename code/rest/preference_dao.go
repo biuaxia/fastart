@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"time"
 )
 
@@ -11,7 +11,7 @@ type PreferenceDao struct {
 	BaseDao
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *PreferenceDao) Fetch() *Preference {
 
 	// Read
@@ -57,7 +57,7 @@ func (this *PreferenceDao) Save(preference *Preference) *Preference {
 	return preference
 }
 
-//System cleanup.
+// System cleanup.
 func (this *PreferenceDao) Cleanup() {
 
 	this.logger.Info("[PreferenceDao] clean up. Delete all Preference")

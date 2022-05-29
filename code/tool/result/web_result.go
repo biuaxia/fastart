@@ -2,7 +2,7 @@ package result
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/i18n"
 	"net/http"
 	"strconv"
 )
@@ -74,7 +74,7 @@ func FetchHttpStatus(code string) int {
 	} else if code == SERVER.Code {
 		return SERVER.HttpStatus
 	} else {
-		//if this is an int. regard it as statusCode
+		// if this is an int. regard it as statusCode
 		statusCode, err := strconv.Atoi(code)
 		if err != nil {
 			return UNKNOWN.HttpStatus
@@ -111,7 +111,7 @@ func CustomWebResult(codeWrapper *CodeWrapper, description string) *WebResult {
 	return wr
 }
 
-//use standard http status code.
+// use standard http status code.
 func StatusCodeWebResult(statusCode int, description string) *WebResult {
 	if description == "" {
 		description = http.StatusText(statusCode)
@@ -140,12 +140,12 @@ func NotFound(format string, v ...interface{}) *WebResult {
 
 }
 
-//sever inner error
+// sever inner error
 func Server(format string, v ...interface{}) *WebResult {
 	return CustomWebResult(SERVER, fmt.Sprintf(format, v...))
 }
 
-//db error.
+// db error.
 var (
 	DB_ERROR_DUPLICATE_KEY  = "Error 1062: Duplicate entry"
 	DB_ERROR_NOT_FOUND      = "record not found"

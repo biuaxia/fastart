@@ -2,7 +2,7 @@ package util
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"go/build"
 	"io"
 	"io/ioutil"
@@ -32,7 +32,7 @@ func GetGoPath() string {
 
 }
 
-//get development home path.
+// get development home path.
 func GetDevHomePath() string {
 
 	_, file, _, ok := runtime.Caller(0)
@@ -40,7 +40,7 @@ func GetDevHomePath() string {
 		panic("cannot get dev home path.")
 	}
 
-	//$DevHomePath/code/tool/util/util_file.go
+	// $DevHomePath/code/tool/util/util_file.go
 	dir := GetDirOfPath(file)
 	dir = GetDirOfPath(dir)
 	dir = GetDirOfPath(dir)
@@ -49,7 +49,7 @@ func GetDevHomePath() string {
 	return dir
 }
 
-//get home path for application.
+// get home path for application.
 func GetHomePath() string {
 	ex, err := os.Executable()
 	if err != nil {
@@ -68,19 +68,19 @@ func GetHomePath() string {
 	return UniformPath(exPath)
 }
 
-//get html path
-//dev: return $project/build/html
-//prod: return $application/html
+// get html path
+// dev: return $project/build/html
+// prod: return $application/html
 func GetHtmlPath() string {
 
-	//开发环境直接使用 build/html 下面的文件
+	// 开发环境直接使用 build/html 下面的文件
 	if EnvWinDevelopment() || EnvMacDevelopment() {
 		return GetDevHomePath() + "/build/html"
 	}
 	return GetHomePath() + "/html"
 }
 
-//if directory not exit, create it.
+// if directory not exit, create it.
 func MakeDirAll(dirPath string) string {
 
 	exists := PathExists(dirPath)
@@ -96,11 +96,11 @@ func MakeDirAll(dirPath string) string {
 	return dirPath
 }
 
-//eg /var/www/xx.log -> /var/www
+// eg /var/www/xx.log -> /var/www
 func GetDirOfPath(fullPath string) string {
 
 	index1 := strings.LastIndex(fullPath, "/")
-	//maybe windows environment
+	// maybe windows environment
 	index2 := strings.LastIndex(fullPath, "\\")
 	index := index1
 	if index2 > index1 {
@@ -110,11 +110,11 @@ func GetDirOfPath(fullPath string) string {
 	return fullPath[:index]
 }
 
-//get filename from path. eg /var/www/xx.log -> xx.log
+// get filename from path. eg /var/www/xx.log -> xx.log
 func GetFilenameOfPath(fullPath string) string {
 
 	index1 := strings.LastIndex(fullPath, "/")
-	//maybe windows env
+	// maybe windows env
 	index2 := strings.LastIndex(fullPath, "\\")
 	index := index1
 	if index2 > index1 {
@@ -124,7 +124,7 @@ func GetFilenameOfPath(fullPath string) string {
 	return fullPath[index+1:]
 }
 
-//try to delete empty dir. true: delete an empty dir, false: delete nothing.
+// try to delete empty dir. true: delete an empty dir, false: delete nothing.
 func DeleteEmptyDir(dirPath string) bool {
 	dir, err := ioutil.ReadDir(dirPath)
 	if err != nil {
@@ -135,7 +135,7 @@ func DeleteEmptyDir(dirPath string) bool {
 		}
 	}
 	if len(dir) == 0 {
-		//empty dir
+		// empty dir
 		err = os.Remove(dirPath)
 		if err != nil {
 			panic(result.BadRequest("occur error while deleting %s %s", dirPath, err.Error()))
@@ -146,7 +146,7 @@ func DeleteEmptyDir(dirPath string) bool {
 	return false
 }
 
-//delete empty dir recursive, delete until not empty.
+// delete empty dir recursive, delete until not empty.
 func DeleteEmptyDirRecursive(dirPath string) {
 
 	fmt.Printf("recursive delete %v \n", dirPath)
@@ -162,7 +162,7 @@ func DeleteEmptyDirRecursive(dirPath string) {
 	}
 }
 
-//get conf path.
+// get conf path.
 func GetConfPath() string {
 
 	homePath := GetHomePath()
@@ -179,7 +179,7 @@ func GetConfPath() string {
 	return filePath
 }
 
-//get log path.
+// get log path.
 func GetLogPath() string {
 
 	homePath := GetHomePath()
@@ -196,7 +196,7 @@ func GetLogPath() string {
 	return filePath
 }
 
-//copy file
+// copy file
 func CopyFile(srcPath string, destPath string) (nBytes int64) {
 
 	srcFileStat, err := os.Stat(srcPath)
@@ -234,9 +234,9 @@ func CopyFile(srcPath string, destPath string) (nBytes int64) {
 	return nBytes
 }
 
-//1. replace \\ to /
-//2. clean path.
-//3. trim suffix /
+// 1. replace \\ to /
+// 2. clean path.
+// 3. trim suffix /
 func UniformPath(p string) string {
 	p = strings.Replace(p, "\\", "/", -1)
 	p = path.Clean(p)

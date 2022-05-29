@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"net/http"
 	"strconv"
 	"strings"
@@ -87,7 +87,7 @@ func (this *MatterController) RegisterRoutes() map[string]func(writer http.Respo
 	routeMap["/api/matter/detail"] = this.Wrap(this.Detail, USER_ROLE_USER)
 	routeMap["/api/matter/page"] = this.Wrap(this.Page, USER_ROLE_GUEST)
 
-	//mirror local files.
+	// mirror local files.
 	routeMap["/api/matter/mirror"] = this.Wrap(this.Mirror, USER_ROLE_USER)
 	routeMap["/api/matter/zip"] = this.Wrap(this.Zip, USER_ROLE_USER)
 
@@ -133,7 +133,7 @@ func (this *MatterController) Page(writer http.ResponseWriter, request *http.Req
 
 	var userUuid string
 
-	//auth by shareUuid.
+	// auth by shareUuid.
 	shareUuid := request.FormValue("shareUuid")
 	shareCode := request.FormValue("shareCode")
 	shareRootUuid := request.FormValue("shareRootUuid")
@@ -154,7 +154,7 @@ func (this *MatterController) Page(writer http.ResponseWriter, request *http.Req
 		puuid = dirMatter.Uuid
 
 	} else {
-		//if cannot auth by share. Then login is required.
+		// if cannot auth by share. Then login is required.
 		user := this.checkUser(request)
 		userUuid = user.Uuid
 
@@ -249,7 +249,7 @@ func (this *MatterController) Upload(writer http.ResponseWriter, request *http.R
 	err = request.ParseMultipartForm(32 << 20)
 	this.PanicError(err)
 
-	//for IE browser. filename may contains filepath.
+	// for IE browser. filename may contains filepath.
 	fileName := handler.Filename
 	pos := strings.LastIndex(fileName, "\\")
 	if pos != -1 {
@@ -262,13 +262,13 @@ func (this *MatterController) Upload(writer http.ResponseWriter, request *http.R
 
 	dirMatter := this.matterDao.CheckWithRootByUuid(puuid, user)
 
-	//support upload simultaneously
+	// support upload simultaneously
 	matter := this.matterService.Upload(request, file, user, dirMatter, fileName, privacy)
 
 	return this.Success(matter)
 }
 
-//crawl a file by url.
+// crawl a file by url.
 func (this *MatterController) Crawl(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	url := request.FormValue("url")
@@ -292,7 +292,7 @@ func (this *MatterController) Crawl(writer http.ResponseWriter, request *http.Re
 	return this.Success(matter)
 }
 
-//soft delete.
+// soft delete.
 func (this *MatterController) SoftDelete(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	uuid := request.FormValue("uuid")
@@ -346,7 +346,7 @@ func (this *MatterController) SoftDeleteBatch(writer http.ResponseWriter, reques
 	return this.Success("OK")
 }
 
-//recovery delete.
+// recovery delete.
 func (this *MatterController) Recovery(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	uuid := request.FormValue("uuid")
@@ -366,7 +366,7 @@ func (this *MatterController) Recovery(writer http.ResponseWriter, request *http
 	return this.Success("OK")
 }
 
-//recovery batch.
+// recovery batch.
 func (this *MatterController) RecoveryBatch(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	uuids := request.FormValue("uuids")
@@ -397,7 +397,7 @@ func (this *MatterController) RecoveryBatch(writer http.ResponseWriter, request 
 	return this.Success("OK")
 }
 
-//complete delete.
+// complete delete.
 func (this *MatterController) Delete(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	uuid := request.FormValue("uuid")
@@ -451,7 +451,7 @@ func (this *MatterController) DeleteBatch(writer http.ResponseWriter, request *h
 	return this.Success("OK")
 }
 
-//manual clean expired deleted matters.
+// manual clean expired deleted matters.
 func (this *MatterController) CleanExpiredDeletedMatters(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	this.matterService.CleanExpiredDeletedMatters()
@@ -545,7 +545,7 @@ func (this *MatterController) Move(writer http.ResponseWriter, request *http.Req
 			panic(result.BadRequest("src matter has been deleted. Cannot move."))
 		}
 
-		//check whether there are files with the same name.
+		// check whether there are files with the same name.
 		count := this.matterDao.CountByUserUuidAndPuuidAndDirAndName(user.Uuid, destMatter.Uuid, srcMatter.Dir, srcMatter.Name)
 
 		if count > 0 {
@@ -564,7 +564,7 @@ func (this *MatterController) Move(writer http.ResponseWriter, request *http.Req
 	return this.Success(nil)
 }
 
-//mirror local files to EyeblueTank
+// mirror local files to EyeblueTank
 func (this *MatterController) Mirror(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	srcPath := request.FormValue("srcPath")
@@ -588,7 +588,7 @@ func (this *MatterController) Mirror(writer http.ResponseWriter, request *http.R
 
 }
 
-//download zip.
+// download zip.
 func (this *MatterController) Zip(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	uuids := request.FormValue("uuids")

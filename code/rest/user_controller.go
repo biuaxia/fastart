@@ -1,11 +1,11 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -68,11 +68,11 @@ func (this *UserController) innerLogin(writer http.ResponseWriter, request *http
 		panic(result.BadRequestI18n(request, i18n.UserDisabled))
 	}
 
-	//set cookie. expire after 30 days.
+	// set cookie. expire after 30 days.
 	expiration := time.Now()
 	expiration = expiration.AddDate(0, 0, 30)
 
-	//save session to db.
+	// save session to db.
 	session := &Session{
 		UserUuid:   user.Uuid,
 		Ip:         util.GetIpAddress(request),
@@ -82,7 +82,7 @@ func (this *UserController) innerLogin(writer http.ResponseWriter, request *http
 	session.CreateTime = time.Now()
 	session = this.sessionDao.Create(session)
 
-	//set cookie
+	// set cookie
 	cookie := http.Cookie{
 		Name:    core.COOKIE_AUTH_KEY,
 		Path:    "/",
@@ -90,13 +90,13 @@ func (this *UserController) innerLogin(writer http.ResponseWriter, request *http
 		Expires: expiration}
 	http.SetCookie(writer, &cookie)
 
-	//update lastTime and lastIp
+	// update lastTime and lastIp
 	user.LastTime = time.Now()
 	user.LastIp = util.GetIpAddress(request)
 	this.userDao.Save(user)
 }
 
-//login by username and password
+// login by username and password
 func (this *UserController) Login(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	username := request.FormValue("username")
@@ -119,7 +119,7 @@ func (this *UserController) Login(writer http.ResponseWriter, request *http.Requ
 	return this.Success(user)
 }
 
-//login by authentication.
+// login by authentication.
 func (this *UserController) AuthenticationLogin(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	authentication := request.FormValue("authentication")
@@ -140,13 +140,13 @@ func (this *UserController) AuthenticationLogin(writer http.ResponseWriter, requ
 	return this.Success(user)
 }
 
-//fetch current user's info.
+// fetch current user's info.
 func (this *UserController) Info(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 	user := this.checkUser(request)
 	return this.Success(user)
 }
 
-//register by username and password. After registering, will auto login.
+// register by username and password. After registering, will auto login.
 func (this *UserController) Register(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	username := request.FormValue("username")
@@ -179,7 +179,7 @@ func (this *UserController) Register(writer http.ResponseWriter, request *http.R
 
 	user = this.userDao.Create(user)
 
-	//auto login
+	// auto login
 	this.innerLogin(writer, request, user)
 
 	return this.Success(user)
@@ -193,7 +193,7 @@ func (this *UserController) Create(writer http.ResponseWriter, request *http.Req
 	sizeLimitStr := request.FormValue("sizeLimit")
 	totalSizeLimitStr := request.FormValue("totalSizeLimit")
 
-	//only admin can edit user's sizeLimit
+	// only admin can edit user's sizeLimit
 	var sizeLimit int64 = 0
 	if sizeLimitStr == "" {
 		panic("user's limit size is required")
@@ -260,7 +260,7 @@ func (this *UserController) Edit(writer http.ResponseWriter, request *http.Reque
 	currentUser.AvatarUrl = avatarUrl
 
 	if user.Role == USER_ROLE_ADMINISTRATOR {
-		//only admin can edit user's sizeLimit
+		// only admin can edit user's sizeLimit
 		var sizeLimit int64 = 0
 		if sizeLimitStr == "" {
 			panic("user's limit size is required")
@@ -295,7 +295,7 @@ func (this *UserController) Edit(writer http.ResponseWriter, request *http.Reque
 
 	currentUser = this.userDao.Save(currentUser)
 
-	//remove cache user.
+	// remove cache user.
 	this.userService.RemoveCacheUserByUuid(currentUser.Uuid)
 
 	return this.Success(currentUser)
@@ -313,7 +313,7 @@ func (this *UserController) Detail(writer http.ResponseWriter, request *http.Req
 
 func (this *UserController) Logout(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
-	//try to find from SessionCache.
+	// try to find from SessionCache.
 	sessionId := util.GetSessionUuidFromRequest(request, core.COOKIE_AUTH_KEY)
 	if sessionId == "" {
 		return nil
@@ -326,13 +326,13 @@ func (this *UserController) Logout(writer http.ResponseWriter, request *http.Req
 		this.sessionDao.Save(session)
 	}
 
-	//delete session.
+	// delete session.
 	_, err := core.CONTEXT.GetSessionCache().Delete(sessionId)
 	if err != nil {
 		this.logger.Error("error while deleting session.")
 	}
 
-	//clear cookie.
+	// clear cookie.
 	expiration := time.Now()
 	expiration = expiration.AddDate(-1, 0, 0)
 	cookie := http.Cookie{
@@ -411,7 +411,7 @@ func (this *UserController) ToggleStatus(writer http.ResponseWriter, request *ht
 
 	currentUser = this.userDao.Save(currentUser)
 
-	//remove cache user.
+	// remove cache user.
 	this.userService.RemoveCacheUserByUuid(currentUser.Uuid)
 
 	return this.Success(currentUser)
@@ -423,7 +423,7 @@ func (this *UserController) Transfiguration(writer http.ResponseWriter, request 
 	uuid := request.FormValue("uuid")
 	currentUser := this.userDao.CheckByUuid(uuid)
 
-	//expire after 10 minutes.
+	// expire after 10 minutes.
 	expiration := time.Now()
 	expiration = expiration.Add(10 * time.Minute)
 
@@ -439,7 +439,7 @@ func (this *UserController) Transfiguration(writer http.ResponseWriter, request 
 	return this.Success(session.Uuid)
 }
 
-//scan user's physics files. create index into EyeblueTank
+// scan user's physics files. create index into EyeblueTank
 func (this *UserController) Scan(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	uuid := request.FormValue("uuid")
@@ -478,7 +478,7 @@ func (this *UserController) ChangePassword(writer http.ResponseWriter, request *
 
 	user := this.checkUser(request)
 
-	//if username is demo, cannot change password.
+	// if username is demo, cannot change password.
 	if user.Username == USERNAME_DEMO {
 		return this.Success(user)
 	}
@@ -494,7 +494,7 @@ func (this *UserController) ChangePassword(writer http.ResponseWriter, request *
 	return this.Success(user)
 }
 
-//admin reset password.
+// admin reset password.
 func (this *UserController) ResetPassword(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	userUuid := request.FormValue("userUuid")

@@ -8,7 +8,7 @@ import (
 func TestUsername(t *testing.T) {
 
 	testMap := make(map[string]bool)
-	testMap[`tank`] = true
+	testMap[`fart`] = true
 	testMap[`孙悟空`] = true
 	testMap[`孙悟wukong`] = true
 	testMap[`孙悟八戒`] = true
@@ -22,7 +22,7 @@ func TestUsername(t *testing.T) {
 	for k, v := range testMap {
 		pattern := "^[\\p{Han}0-9a-zA-Z_]+$"
 		usernameRegex := regexp.MustCompile(pattern)
-		//使用MatchString来将要匹配的字符串传到匹配规则中
+		// 使用MatchString来将要匹配的字符串传到匹配规则中
 		result := usernameRegex.MatchString(k)
 
 		if v == result {

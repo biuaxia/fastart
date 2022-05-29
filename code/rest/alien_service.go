@@ -2,13 +2,13 @@ package rest
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"net/http"
 	"time"
 )
 
-//@Service
+// @Service
 type AlienService struct {
 	BaseBean
 	matterDao         *MatterDao
@@ -78,10 +78,10 @@ func (this *AlienService) PreviewOrDownload(
 		panic(result.BadRequest("filename in url incorrect"))
 	}
 
-	//only private file need auth.
+	// only private file need auth.
 	if matter.Privacy {
 
-		//1.use downloadToken to auth.
+		// 1.use downloadToken to auth.
 		downloadTokenUuid := request.FormValue("downloadTokenUuid")
 		if downloadTokenUuid != "" {
 			downloadToken := this.downloadTokenDao.CheckByUuid(downloadTokenUuid)
@@ -98,7 +98,7 @@ func (this *AlienService) PreviewOrDownload(
 				panic(result.UNAUTHORIZED)
 			}
 
-			//TODO: expire the download token. If download by chunk, do this later.
+			// TODO: expire the download token. If download by chunk, do this later.
 			downloadToken.ExpireTime = time.Now()
 			this.downloadTokenDao.Save(downloadToken)
 
@@ -106,7 +106,7 @@ func (this *AlienService) PreviewOrDownload(
 
 			operator := this.findUser(request)
 
-			//use share code to auth.
+			// use share code to auth.
 			shareUuid := request.FormValue("shareUuid")
 			shareCode := request.FormValue("shareCode")
 			shareRootUuid := request.FormValue("shareRootUuid")
@@ -116,25 +116,25 @@ func (this *AlienService) PreviewOrDownload(
 		}
 	}
 
-	//download directory
+	// download directory
 	if matter.Dir {
 
 		this.matterService.DownloadZip(writer, request, []*Matter{matter})
 
 	} else {
 
-		//handle the image operation.
+		// handle the image operation.
 		needProcess, imageResizeM, imageResizeW, imageResizeH := this.imageCacheService.ResizeParams(request)
 		if needProcess {
 
-			//if image, try to use cache.
+			// if image, try to use cache.
 			mode := fmt.Sprintf("%s_%d_%d", imageResizeM, imageResizeW, imageResizeH)
 			imageCache := this.imageCacheDao.FindByMatterUuidAndMode(matter.Uuid, mode)
 			if imageCache == nil {
 				imageCache = this.imageCacheService.cacheImage(writer, request, matter)
 			}
 
-			//download the cache image file.
+			// download the cache image file.
 			this.matterService.DownloadFile(writer, request, GetUserCacheRootDir(imageCache.Username)+imageCache.Path, imageCache.Name, withContentDisposition)
 
 		} else {
@@ -143,7 +143,7 @@ func (this *AlienService) PreviewOrDownload(
 
 	}
 
-	//async increase the download times.
+	// async increase the download times.
 	go core.RunWithRecovery(func() {
 		this.matterDao.TimesIncrement(uuid)
 	})

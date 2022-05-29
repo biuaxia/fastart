@@ -1,12 +1,12 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"gorm.io/gorm"
 
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"time"
 )
 
@@ -14,7 +14,7 @@ type ShareDao struct {
 	BaseDao
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *ShareDao) FindByUuid(uuid string) *Share {
 	var entity = &Share{}
 	db := core.CONTEXT.GetDB().Where("uuid = ?", uuid).First(entity)
@@ -28,7 +28,7 @@ func (this *ShareDao) FindByUuid(uuid string) *Share {
 	return entity
 }
 
-//find by uuid. if not found panic NotFound error
+// find by uuid. if not found panic NotFound error
 func (this *ShareDao) CheckByUuid(uuid string) *Share {
 	entity := this.FindByUuid(uuid)
 	if entity == nil {
@@ -96,7 +96,7 @@ func (this *ShareDao) Delete(share *Share) {
 
 }
 
-//System cleanup.
+// System cleanup.
 func (this *ShareDao) Cleanup() {
 	this.logger.Info("[ShareDao] clean up. Delete all Share")
 	db := core.CONTEXT.GetDB().Where("uuid is not null").Delete(Share{})

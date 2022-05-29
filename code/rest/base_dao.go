@@ -1,14 +1,14 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/builder"
 )
 
 type BaseDao struct {
 	BaseBean
 }
 
-//get an order string by sortMap
+// get an order string by sortMap
 func (this *BaseDao) GetSortString(sortArray []builder.OrderPair) string {
 
 	if sortArray == nil || len(sortArray) == 0 {

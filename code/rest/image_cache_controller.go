@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"net/http"
 	"strconv"
 	"strings"

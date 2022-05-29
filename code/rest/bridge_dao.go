@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"gorm.io/gorm"
 	"time"
 )
@@ -13,7 +13,7 @@ type BridgeDao struct {
 	BaseDao
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *BridgeDao) FindByUuid(uuid string) *Bridge {
 
 	var bridge = &Bridge{}
@@ -29,7 +29,7 @@ func (this *BridgeDao) FindByUuid(uuid string) *Bridge {
 
 }
 
-//find by uuid. if not found panic NotFound error
+// find by uuid. if not found panic NotFound error
 func (this *BridgeDao) CheckByUuid(uuid string) *Bridge {
 
 	entity := this.FindByUuid(uuid)
@@ -41,7 +41,7 @@ func (this *BridgeDao) CheckByUuid(uuid string) *Bridge {
 
 }
 
-//find by shareUuid and matterUuid. if not found panic NotFound error.
+// find by shareUuid and matterUuid. if not found panic NotFound error.
 func (this *BridgeDao) CheckByShareUuidAndMatterUuid(shareUuid string, matterUuid string) *Bridge {
 
 	var bridge = &Bridge{}
@@ -57,7 +57,7 @@ func (this *BridgeDao) CheckByShareUuidAndMatterUuid(shareUuid string, matterUui
 	return bridge
 }
 
-//get pager
+// get pager
 func (this *BridgeDao) PlainPage(page int, pageSize int, shareUuid string, sortArray []builder.OrderPair) (int, []*Bridge) {
 
 	var wp = &builder.WherePair{}
@@ -80,7 +80,7 @@ func (this *BridgeDao) PlainPage(page int, pageSize int, shareUuid string, sortA
 	return int(count), bridges
 }
 
-//get pager
+// get pager
 func (this *BridgeDao) Page(page int, pageSize int, shareUuid string, sortArray []builder.OrderPair) *Pager {
 
 	count, bridges := this.PlainPage(page, pageSize, shareUuid, sortArray)

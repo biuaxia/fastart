@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"math"
 	"time"
 )
@@ -36,7 +36,7 @@ func (this *UserDao) Create(user *User) *User {
 	return user
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *UserDao) FindByUuid(uuid string) *User {
 	var entity = &User{}
 	db := core.CONTEXT.GetDB().Where("uuid = ?", uuid).First(entity)
@@ -50,7 +50,7 @@ func (this *UserDao) FindByUuid(uuid string) *User {
 	return entity
 }
 
-//find by uuid. if not found panic NotFound error
+// find by uuid. if not found panic NotFound error
 func (this *UserDao) CheckByUuid(uuid string) *User {
 	entity := this.FindByUuid(uuid)
 	if entity == nil {
@@ -111,10 +111,10 @@ func (this *UserDao) PlainPage(page int, pageSize int, username string, status s
 	return int(count), users
 }
 
-//handle user page by page.
+// handle user page by page.
 func (this *UserDao) PageHandle(username string, status string, fun func(user *User)) {
 
-	//delete share and bridges.
+	// delete share and bridges.
 	pageSize := 1000
 	sortArray := []builder.OrderPair{
 		{
@@ -154,7 +154,7 @@ func (this *UserDao) Save(user *User) *User {
 	return user
 }
 
-//find all 2.0 users.
+// find all 2.0 users.
 func (this *UserDao) FindUsers20() []*User {
 	var users []*User
 	var wp = &builder.WherePair{}
@@ -179,7 +179,7 @@ func (this *UserDao) Delete(user *User) {
 	this.PanicError(db.Error)
 }
 
-//System cleanup.
+// System cleanup.
 func (this *UserDao) Cleanup() {
 	this.logger.Info("[UserDao] clean up. Delete all User")
 	db := core.CONTEXT.GetDB().Where("uuid is not null and role != ?", USER_ROLE_ADMINISTRATOR).Delete(User{})

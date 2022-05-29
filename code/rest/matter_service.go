@@ -3,12 +3,12 @@ package rest
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/download"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/download"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -23,7 +23,7 @@ import (
 /**
  * Methods start with Atomic has Lock. These method cannot be invoked by other Atomic Methods.
  */
-//@Service
+// @Service
 type MatterService struct {
 	BaseBean
 	matterDao         *MatterDao
@@ -69,7 +69,7 @@ func (this *MatterService) Init() {
 
 }
 
-//Download. Support chunk download.
+// Download. Support chunk download.
 func (this *MatterService) DownloadFile(
 	writer http.ResponseWriter,
 	request *http.Request,
@@ -80,7 +80,7 @@ func (this *MatterService) DownloadFile(
 	download.DownloadFile(writer, request, filePath, filename, withContentDisposition)
 }
 
-//Download specified matters. matters must have the same puuid.
+// Download specified matters. matters must have the same puuid.
 func (this *MatterService) DownloadZip(
 	writer http.ResponseWriter,
 	request *http.Request,
@@ -102,7 +102,7 @@ func (this *MatterService) DownloadZip(
 
 	preference := this.preferenceService.Fetch()
 
-	//count the num of files will be downloaded.
+	// count the num of files will be downloaded.
 	var count int64 = 0
 	for _, matter := range matters {
 		count = count + this.matterDao.CountByUserUuidAndPath(matter.UserUuid, matter.Path)
@@ -114,7 +114,7 @@ func (this *MatterService) DownloadZip(
 		}
 	}
 
-	//count the size of files will be downloaded.
+	// count the size of files will be downloaded.
 	var sumSize int64 = 0
 	for _, matter := range matters {
 		sumSize = sumSize + this.matterDao.SumSizeByUserUuidAndPath(matter.UserUuid, matter.Path)
@@ -126,7 +126,7 @@ func (this *MatterService) DownloadZip(
 		}
 	}
 
-	//prepare the temp zip dir
+	// prepare the temp zip dir
 	destZipDirPath := fmt.Sprintf("%s/%d", GetUserZipRootDir(matters[0].Username), time.Now().UnixNano()/1e6)
 	util.MakeDirAll(destZipDirPath)
 
@@ -141,7 +141,7 @@ func (this *MatterService) DownloadZip(
 
 	download.DownloadFile(writer, request, destZipPath, destZipName, true)
 
-	//delete the temp zip file.
+	// delete the temp zip file.
 	err := os.Remove(destZipPath)
 	if err != nil {
 		this.logger.Error("error while deleting zip file %s", err.Error())
@@ -150,14 +150,14 @@ func (this *MatterService) DownloadZip(
 
 }
 
-//zip matters.
+// zip matters.
 func (this *MatterService) zipMatters(request *http.Request, matters []*Matter, destPath string) {
 
 	if util.PathExists(destPath) {
 		panic(result.BadRequest("%s exists", destPath))
 	}
 
-	//matters must have the same puuid.
+	// matters must have the same puuid.
 	if matters == nil || len(matters) == 0 {
 		panic(result.BadRequest("matters cannot be nil."))
 	}
@@ -173,7 +173,7 @@ func (this *MatterService) zipMatters(request *http.Request, matters []*Matter, 
 		}
 	}
 
-	//wrap children for every matter.
+	// wrap children for every matter.
 	for _, m := range matters {
 		this.WrapChildrenDetail(request, m)
 	}
@@ -193,7 +193,7 @@ func (this *MatterService) zipMatters(request *http.Request, matters []*Matter, 
 		this.PanicError(err)
 	}()
 
-	//DFS algorithm
+	// DFS algorithm
 	var walkFunc func(matter *Matter)
 	walkFunc = func(matter *Matter) {
 
@@ -232,7 +232,7 @@ func (this *MatterService) zipMatters(request *http.Request, matters []*Matter, 
 
 		}
 
-		//dfs.
+		// dfs.
 		for _, m := range matter.Children {
 			walkFunc(m)
 		}
@@ -243,7 +243,7 @@ func (this *MatterService) zipMatters(request *http.Request, matters []*Matter, 
 	}
 }
 
-//delete files.
+// delete files.
 func (this *MatterService) Delete(request *http.Request, matter *Matter, user *User) {
 
 	if matter == nil {
@@ -252,11 +252,11 @@ func (this *MatterService) Delete(request *http.Request, matter *Matter, user *U
 
 	this.matterDao.Delete(matter)
 
-	//re compute the size of Route.
+	// re compute the size of Route.
 	this.ComputeRouteSize(matter.Puuid, user)
 }
 
-//soft delete files.
+// soft delete files.
 func (this *MatterService) SoftDelete(request *http.Request, matter *Matter, user *User) {
 
 	if matter == nil {
@@ -268,10 +268,10 @@ func (this *MatterService) SoftDelete(request *http.Request, matter *Matter, use
 	}
 
 	this.matterDao.SoftDelete(matter)
-	//no need to recompute size.
+	// no need to recompute size.
 }
 
-//recovery delete files.
+// recovery delete files.
 func (this *MatterService) Recovery(request *http.Request, matter *Matter, user *User) {
 
 	if matter == nil {
@@ -283,24 +283,24 @@ func (this *MatterService) Recovery(request *http.Request, matter *Matter, user 
 	}
 
 	this.matterDao.Recovery(matter)
-	//no need to recompute size.
+	// no need to recompute size.
 }
 
-//atomic delete files
+// atomic delete files
 func (this *MatterService) AtomicDelete(request *http.Request, matter *Matter, user *User) {
 
 	if matter == nil {
 		panic(result.BadRequest("matter cannot be nil"))
 	}
 
-	//lock
+	// lock
 	this.userService.MatterLock(matter.UserUuid)
 	defer this.userService.MatterUnlock(matter.UserUuid)
 
 	this.Delete(request, matter, user)
 }
 
-//atomic soft delete files
+// atomic soft delete files
 func (this *MatterService) AtomicSoftDelete(request *http.Request, matter *Matter, user *User) {
 
 	if matter == nil {
@@ -311,11 +311,11 @@ func (this *MatterService) AtomicSoftDelete(request *http.Request, matter *Matte
 		panic(result.BadRequest("matter has been deleted"))
 	}
 
-	//lock
+	// lock
 	this.userService.MatterLock(matter.UserUuid)
 	defer this.userService.MatterUnlock(matter.UserUuid)
 
-	//if disabled the recycle feature. then we hard delete.
+	// if disabled the recycle feature. then we hard delete.
 	preference := this.preferenceService.Fetch()
 	if preference.DeletedKeepDays == 0 {
 		this.Delete(request, matter, user)
@@ -325,7 +325,7 @@ func (this *MatterService) AtomicSoftDelete(request *http.Request, matter *Matte
 
 }
 
-//atomic recovery delete files
+// atomic recovery delete files
 func (this *MatterService) AtomicRecovery(request *http.Request, matter *Matter, user *User) {
 
 	if matter == nil {
@@ -336,14 +336,14 @@ func (this *MatterService) AtomicRecovery(request *http.Request, matter *Matter,
 		panic(result.BadRequest("matter has not been deleted"))
 	}
 
-	//lock
+	// lock
 	this.userService.MatterLock(matter.UserUuid)
 	defer this.userService.MatterUnlock(matter.UserUuid)
 
 	this.Recovery(request, matter, user)
 }
 
-//upload files.
+// upload files.
 func (this *MatterService) Upload(request *http.Request, file io.Reader, user *User, dirMatter *Matter, filename string, privacy bool) *Matter {
 
 	if user == nil {
@@ -373,7 +373,7 @@ func (this *MatterService) Upload(request *http.Request, file io.Reader, user *U
 
 	util.MakeDirAll(dirAbsolutePath)
 
-	//if exist, overwrite it.
+	// if exist, overwrite it.
 	exist := util.PathExists(fileAbsolutePath)
 	if exist {
 		this.logger.Error("%s exits, overwrite it.", fileAbsolutePath)
@@ -394,10 +394,10 @@ func (this *MatterService) Upload(request *http.Request, file io.Reader, user *U
 
 	this.logger.Info("upload %s %v ", filename, util.HumanFileSize(fileSize))
 
-	//check the size limit.
+	// check the size limit.
 	if user.SizeLimit >= 0 {
 		if fileSize > user.SizeLimit {
-			//delete the file on disk.
+			// delete the file on disk.
 			err = os.Remove(fileAbsolutePath)
 			this.PanicError(err)
 
@@ -405,11 +405,11 @@ func (this *MatterService) Upload(request *http.Request, file io.Reader, user *U
 		}
 	}
 
-	//check total size.
+	// check total size.
 	if user.TotalSizeLimit >= 0 {
 		if user.TotalSize+fileSize > user.TotalSizeLimit {
 
-			//delete the file on disk.
+			// delete the file on disk.
 			err = os.Remove(fileAbsolutePath)
 			this.PanicError(err)
 
@@ -427,7 +427,7 @@ func (this *MatterService) createNonDirMatter(dirMatter *Matter, filename string
 	dirRelativePath := dirMatter.Path
 	fileRelativePath := dirRelativePath + "/" + filename
 
-	//write to db.
+	// write to db.
 	matter := &Matter{
 		Puuid:     dirMatter.Uuid,
 		UserUuid:  user.Uuid,
@@ -443,7 +443,7 @@ func (this *MatterService) createNonDirMatter(dirMatter *Matter, filename string
 	}
 	matter = this.matterDao.Create(matter)
 
-	//compute the size of directory
+	// compute the size of directory
 	go core.RunWithRecovery(func() {
 		this.ComputeRouteSize(dirMatter.Uuid, user)
 	})
@@ -458,7 +458,7 @@ func (this *MatterService) updateNonDirMatter(matter *Matter, fileSize int64, us
 
 	matter = this.matterDao.Save(matter)
 
-	//compute the size of directory
+	// compute the size of directory
 	go core.RunWithRecovery(func() {
 		this.ComputeRouteSize(matter.Puuid, user)
 	})
@@ -469,7 +469,7 @@ func (this *MatterService) updateNonDirMatter(matter *Matter, fileSize int64, us
 // compute route size. It will compute upward until root directory
 func (this *MatterService) ComputeRouteSize(matterUuid string, user *User) {
 
-	//if to root directory, then update to user's info.
+	// if to root directory, then update to user's info.
 	if matterUuid == MATTER_ROOT {
 
 		size := this.matterDao.SizeByPuuidAndUserUuid(MATTER_ROOT, user.Uuid)
@@ -477,7 +477,7 @@ func (this *MatterService) ComputeRouteSize(matterUuid string, user *User) {
 		db := core.CONTEXT.GetDB().Model(&User{}).Where("uuid = ?", user.Uuid).Update("total_size", size)
 		this.PanicError(db.Error)
 
-		//update user total size info in cache.
+		// update user total size info in cache.
 		user.TotalSize = size
 
 		return
@@ -485,12 +485,12 @@ func (this *MatterService) ComputeRouteSize(matterUuid string, user *User) {
 
 	matter := this.matterDao.CheckByUuid(matterUuid)
 
-	//only compute dir
+	// only compute dir
 	if matter.Dir {
-		//compute the total size.
+		// compute the total size.
 		size := this.matterDao.SizeByPuuidAndUserUuid(matterUuid, user.Uuid)
 
-		//when changed, we update
+		// when changed, we update
 		if matter.Size != size {
 			db := core.CONTEXT.GetDB().Model(&Matter{}).Where("uuid = ?", matterUuid).Update("size", size)
 			this.PanicError(db.Error)
@@ -498,7 +498,7 @@ func (this *MatterService) ComputeRouteSize(matterUuid string, user *User) {
 
 	}
 
-	//update parent recursively.
+	// update parent recursively.
 	this.ComputeRouteSize(matter.Puuid, user)
 }
 
@@ -516,13 +516,13 @@ func (this *MatterService) ComputeDirSize(dirMatter *Matter, user *User) {
 
 	this.logger.Info("Compute dir's size %s %s", dirMatter.Uuid, dirMatter.Name)
 
-	//update sub dir first
+	// update sub dir first
 	childrenDirMatters := this.matterDao.FindByUserUuidAndPuuidAndDirTrue(user.Uuid, dirMatter.Uuid)
 	for _, childrenDirMatter := range childrenDirMatters {
 		this.ComputeDirSize(childrenDirMatter, user)
 	}
 
-	//if to root directory, then update to user's info.
+	// if to root directory, then update to user's info.
 	if dirMatter.Uuid == MATTER_ROOT {
 
 		size := this.matterDao.SizeByPuuidAndUserUuid(MATTER_ROOT, user.Uuid)
@@ -530,14 +530,14 @@ func (this *MatterService) ComputeDirSize(dirMatter *Matter, user *User) {
 		db := core.CONTEXT.GetDB().Model(&User{}).Where("uuid = ?", user.Uuid).Update("total_size", size)
 		this.PanicError(db.Error)
 
-		//update user total size info in cache.
+		// update user total size info in cache.
 		user.TotalSize = size
 	} else {
 
-		//compute self.
+		// compute self.
 		size := this.matterDao.SizeByPuuidAndUserUuid(dirMatter.Uuid, user.Uuid)
 
-		//when changed, we update
+		// when changed, we update
 		if dirMatter.Size != size {
 			db := core.CONTEXT.GetDB().Model(&Matter{}).Where("uuid = ?", dirMatter.Uuid).Update("size", size)
 			this.PanicError(db.Error)
@@ -546,7 +546,7 @@ func (this *MatterService) ComputeDirSize(dirMatter *Matter, user *User) {
 
 }
 
-//inner create directory.
+// inner create directory.
 func (this *MatterService) createDirectory(request *http.Request, dirMatter *Matter, name string, user *User) *Matter {
 
 	if dirMatter == nil {
@@ -581,7 +581,7 @@ func (this *MatterService) createDirectory(request *http.Request, dirMatter *Mat
 		panic(result.BadRequestI18n(request, i18n.MatterNameContainSpecialChars))
 	}
 
-	//if exist. return.
+	// if exist. return.
 	matter := this.matterDao.FindByUserUuidAndPuuidAndDirAndName(user.Uuid, dirMatter.Uuid, TRUE, name)
 	if matter != nil {
 		return matter
@@ -597,11 +597,11 @@ func (this *MatterService) createDirectory(request *http.Request, dirMatter *Mat
 
 	relativePath := dirMatter.Path + "/" + name
 
-	//crate directory on disk.
+	// crate directory on disk.
 	dirPath := util.MakeDirAll(absolutePath)
 	this.logger.Info("Create Directory: %s", dirPath)
 
-	//create in db
+	// create in db
 	matter = &Matter{
 		Puuid:     dirMatter.Uuid,
 		UserUuid:  user.Uuid,
@@ -631,24 +631,24 @@ func (this *MatterService) AtomicCreateDirectory(request *http.Request, dirMatte
 	return matter
 }
 
-//copy or move may overwrite.
+// copy or move may overwrite.
 func (this *MatterService) handleOverwrite(request *http.Request, user *User, destinationPath string, overwrite bool) {
 
 	destMatter := this.matterDao.findByUserUuidAndPath(user.Uuid, destinationPath)
 	if destMatter != nil {
-		//if exist
+		// if exist
 		if overwrite {
-			//delete.
+			// delete.
 			this.Delete(request, destMatter, user)
 		} else {
-			//throw precondition failed. (RFC4918:10.6)
+			// throw precondition failed. (RFC4918:10.6)
 			panic(result.CustomWebResult(result.PRECONDITION_FAILED, fmt.Sprintf("%s exists", destMatter.Path)))
 		}
 	}
 
 }
 
-//move srcMatter to destMatter. invoker must handled the overwrite and lock.
+// move srcMatter to destMatter. invoker must handled the overwrite and lock.
 func (this *MatterService) move(request *http.Request, srcMatter *Matter, destDirMatter *Matter, user *User) {
 
 	if srcMatter == nil {
@@ -664,20 +664,20 @@ func (this *MatterService) move(request *http.Request, srcMatter *Matter, destDi
 
 	if srcMatter.Dir {
 
-		//if src is dir.
+		// if src is dir.
 		destAbsolutePath := destDirMatter.AbsolutePath() + "/" + srcMatter.Name
 		srcAbsolutePath := srcMatter.AbsolutePath()
 
-		//move src to dest on disk.
+		// move src to dest on disk.
 		err := os.Rename(srcAbsolutePath, destAbsolutePath)
 		this.PanicError(err)
 
-		//change info on db.
+		// change info on db.
 		srcMatter.Puuid = destDirMatter.Uuid
 		srcMatter.Path = destDirMatter.Path + "/" + srcMatter.Name
 		srcMatter = this.matterDao.Save(srcMatter)
 
-		//reCompute the path.
+		// reCompute the path.
 		matters := this.matterDao.FindByPuuidAndUserUuid(srcMatter.Uuid, srcMatter.UserUuid, nil)
 		for _, m := range matters {
 			this.adjustPath(m, srcMatter)
@@ -685,31 +685,31 @@ func (this *MatterService) move(request *http.Request, srcMatter *Matter, destDi
 
 	} else {
 
-		//if src is NOT dir.
+		// if src is NOT dir.
 		destAbsolutePath := destDirMatter.AbsolutePath() + "/" + srcMatter.Name
 		srcAbsolutePath := srcMatter.AbsolutePath()
 
-		//move src to dest on disk.
+		// move src to dest on disk.
 		err := os.Rename(srcAbsolutePath, destAbsolutePath)
 		this.PanicError(err)
 
-		//delete caches.
+		// delete caches.
 		this.imageCacheDao.DeleteByMatterUuid(srcMatter.Uuid)
 
-		//change info in db.
+		// change info in db.
 		srcMatter.Puuid = destDirMatter.Uuid
 		srcMatter.Path = destDirMatter.Path + "/" + srcMatter.Name
 		srcMatter = this.matterDao.Save(srcMatter)
 
 	}
 
-	//reCompute the size of src and dest.
+	// reCompute the size of src and dest.
 	this.ComputeRouteSize(srcPuuid, user)
 	this.ComputeRouteSize(destDirUuid, user)
 
 }
 
-//move srcMatter to destMatter(must be dir)
+// move srcMatter to destMatter(must be dir)
 func (this *MatterService) AtomicMove(request *http.Request, srcMatter *Matter, destDirMatter *Matter, overwrite bool, user *User) {
 
 	if srcMatter == nil {
@@ -726,7 +726,7 @@ func (this *MatterService) AtomicMove(request *http.Request, srcMatter *Matter, 
 		panic(result.BadRequestI18n(request, i18n.MatterDestinationMustDirectory))
 	}
 
-	//neither move to itself, nor move to its children.
+	// neither move to itself, nor move to its children.
 	destDirMatter = this.WrapParentDetail(request, destDirMatter)
 	tmpMatter := destDirMatter
 	for tmpMatter != nil {
@@ -736,15 +736,15 @@ func (this *MatterService) AtomicMove(request *http.Request, srcMatter *Matter, 
 		tmpMatter = tmpMatter.Parent
 	}
 
-	//handle the overwrite
+	// handle the overwrite
 	destinationPath := destDirMatter.Path + "/" + srcMatter.Name
 	this.handleOverwrite(request, user, destinationPath, overwrite)
 
-	//do the move operation.
+	// do the move operation.
 	this.move(request, srcMatter, destDirMatter, user)
 }
 
-//move srcMatters to destMatter(must be dir)
+// move srcMatters to destMatter(must be dir)
 func (this *MatterService) AtomicMoveBatch(request *http.Request, srcMatters []*Matter, destDirMatter *Matter, user *User) {
 
 	if destDirMatter == nil {
@@ -762,7 +762,7 @@ func (this *MatterService) AtomicMoveBatch(request *http.Request, srcMatters []*
 		panic(result.BadRequestI18n(request, i18n.MatterDestinationMustDirectory))
 	}
 
-	//neither move to itself, nor move to its children.
+	// neither move to itself, nor move to its children.
 	destDirMatter = this.WrapParentDetail(request, destDirMatter)
 	for _, srcMatter := range srcMatters {
 
@@ -781,7 +781,7 @@ func (this *MatterService) AtomicMoveBatch(request *http.Request, srcMatters []*
 
 }
 
-//copy srcMatter to destMatter. invoker must handled the overwrite and lock.
+// copy srcMatter to destMatter. invoker must handled the overwrite and lock.
 func (this *MatterService) copy(request *http.Request, srcMatter *Matter, destDirMatter *Matter, name string) {
 
 	this.logger.Info("copy srcPath = %s destPath = %s/%s", srcMatter.Path, destDirMatter.Path, name)
@@ -804,10 +804,10 @@ func (this *MatterService) copy(request *http.Request, srcMatter *Matter, destDi
 
 		newMatter = this.matterDao.Create(newMatter)
 
-		//make the dir
+		// make the dir
 		util.MakeDirAll(newMatter.AbsolutePath())
 
-		//copy children
+		// copy children
 		matters := this.matterDao.FindByPuuidAndUserUuid(srcMatter.Uuid, srcMatter.UserUuid, nil)
 		for _, m := range matters {
 			this.copy(request, m, newMatter, m.Name)
@@ -818,7 +818,7 @@ func (this *MatterService) copy(request *http.Request, srcMatter *Matter, destDi
 		destAbsolutePath := destDirMatter.AbsolutePath() + "/" + name
 		srcAbsolutePath := srcMatter.AbsolutePath()
 
-		//copy file on disk.
+		// copy file on disk.
 		util.CopyFile(srcAbsolutePath, destAbsolutePath)
 
 		newMatter := &Matter{
@@ -839,7 +839,7 @@ func (this *MatterService) copy(request *http.Request, srcMatter *Matter, destDi
 	}
 }
 
-//copy srcMatter to destMatter.
+// copy srcMatter to destMatter.
 func (this *MatterService) AtomicCopy(request *http.Request, srcMatter *Matter, destDirMatter *Matter, name string, overwrite bool, user *User) {
 
 	if srcMatter == nil {
@@ -859,7 +859,7 @@ func (this *MatterService) AtomicCopy(request *http.Request, srcMatter *Matter, 
 	this.copy(request, srcMatter, destDirMatter, name)
 }
 
-//rename matter to name
+// rename matter to name
 func (this *MatterService) AtomicRename(request *http.Request, matter *Matter, name string, overwrite bool, user *User) {
 
 	this.logger.Info("Try to rename srcPath = %s to name = %s", matter.Path, name)
@@ -881,11 +881,11 @@ func (this *MatterService) AtomicRename(request *http.Request, matter *Matter, n
 		panic(result.BadRequestI18n(request, i18n.MatterNameNoChange))
 	}
 
-	//check whether the name used by another matter.
+	// check whether the name used by another matter.
 	oldMatter := this.matterDao.FindByUserUuidAndPuuidAndDirAndName(user.Uuid, matter.Puuid, "", name)
 	if oldMatter != nil {
 		if overwrite {
-			//delete this one.
+			// delete this one.
 			this.Delete(request, oldMatter, user)
 		} else {
 			panic(result.CustomWebResult(result.PRECONDITION_FAILED, fmt.Sprintf("%s already exists", name)))
@@ -894,44 +894,44 @@ func (this *MatterService) AtomicRename(request *http.Request, matter *Matter, n
 	}
 
 	if matter.Dir {
-		//如果源是文件夹
+		// 如果源是文件夹
 
 		oldAbsolutePath := matter.AbsolutePath()
 		absoluteDirPath := util.GetDirOfPath(oldAbsolutePath)
 		relativeDirPath := util.GetDirOfPath(matter.Path)
 		newAbsolutePath := absoluteDirPath + "/" + name
 
-		//物理文件一口气移动
+		// 物理文件一口气移动
 		err := os.Rename(oldAbsolutePath, newAbsolutePath)
 		this.PanicError(err)
 
-		//修改数据库中信息
+		// 修改数据库中信息
 		matter.Name = name
 		matter.Path = relativeDirPath + "/" + name
 		matter = this.matterDao.Save(matter)
 
-		//调整该文件夹下文件的Path.
+		// 调整该文件夹下文件的Path.
 		matters := this.matterDao.FindByPuuidAndUserUuid(matter.Uuid, matter.UserUuid, nil)
 		for _, m := range matters {
 			this.adjustPath(m, matter)
 		}
 
 	} else {
-		//如果源是普通文件
+		// 如果源是普通文件
 
 		oldAbsolutePath := matter.AbsolutePath()
 		absoluteDirPath := util.GetDirOfPath(oldAbsolutePath)
 		relativeDirPath := util.GetDirOfPath(matter.Path)
 		newAbsolutePath := absoluteDirPath + "/" + name
 
-		//物理文件进行移动
+		// 物理文件进行移动
 		err := os.Rename(oldAbsolutePath, newAbsolutePath)
 		this.PanicError(err)
 
-		//删除对应的缓存。
+		// 删除对应的缓存。
 		this.imageCacheDao.DeleteByMatterUuid(matter.Uuid)
 
-		//修改数据库中信息
+		// 修改数据库中信息
 		matter.Name = name
 		matter.Path = relativeDirPath + "/" + name
 		matter = this.matterDao.Save(matter)
@@ -941,18 +941,18 @@ func (this *MatterService) AtomicRename(request *http.Request, matter *Matter, n
 	return
 }
 
-//将本地文件映射到蓝眼云盘中去。
+// 将本地文件映射到蓝眼云盘中去。
 func (this *MatterService) AtomicMirror(request *http.Request, srcPath string, destPath string, overwrite bool, user *User) {
 
 	if user == nil {
 		panic(result.BadRequest("user cannot be nil"))
 	}
 
-	//操作锁
+	// 操作锁
 	this.userService.MatterLock(user.Uuid)
 	defer this.userService.MatterUnlock(user.Uuid)
 
-	//验证参数。
+	// 验证参数。
 	if destPath == "" {
 		panic(result.BadRequest("dest cannot be null"))
 	}
@@ -966,7 +966,7 @@ func (this *MatterService) AtomicMirror(request *http.Request, srcPath string, d
 	this.mirror(request, srcPath, destDirMatter, overwrite, user)
 }
 
-//将本地文件/文件夹映射到蓝眼云盘中去。
+// 将本地文件/文件夹映射到蓝眼云盘中去。
 func (this *MatterService) mirror(request *http.Request, srcPath string, destDirMatter *Matter, overwrite bool, user *User) {
 
 	if user == nil {
@@ -989,7 +989,7 @@ func (this *MatterService) mirror(request *http.Request, srcPath string, destDir
 
 	if fileStat.IsDir() {
 
-		//判断当前文件夹下，文件是否已经存在了。
+		// 判断当前文件夹下，文件是否已经存在了。
 		srcDirMatter := this.matterDao.FindByUserUuidAndPuuidAndDirAndName(user.Uuid, destDirMatter.Uuid, TRUE, fileStat.Name())
 
 		if srcDirMatter == nil {
@@ -999,7 +999,7 @@ func (this *MatterService) mirror(request *http.Request, srcPath string, destDir
 		fileInfos, err := ioutil.ReadDir(srcPath)
 		this.PanicError(err)
 
-		//递归处理本文件夹下的文件或文件夹
+		// 递归处理本文件夹下的文件或文件夹
 		for _, fileInfo := range fileInfos {
 
 			path := fmt.Sprintf("%s/%s", srcPath, fileInfo.Name())
@@ -1008,19 +1008,19 @@ func (this *MatterService) mirror(request *http.Request, srcPath string, destDir
 
 	} else {
 
-		//判断当前文件夹下，文件是否已经存在了。
+		// 判断当前文件夹下，文件是否已经存在了。
 		matter := this.matterDao.FindByUserUuidAndPuuidAndDirAndName(user.Uuid, destDirMatter.Uuid, FALSE, fileStat.Name())
 		if matter != nil {
-			//如果是覆盖，那么删除之前的文件
+			// 如果是覆盖，那么删除之前的文件
 			if overwrite {
 				this.Delete(request, matter, user)
 			} else {
-				//直接完成。
+				// 直接完成。
 				return
 			}
 		}
 
-		//准备直接从本地上传了。
+		// 准备直接从本地上传了。
 		file, err := os.Open(srcPath)
 		this.PanicError(err)
 		defer func() {
@@ -1034,7 +1034,7 @@ func (this *MatterService) mirror(request *http.Request, srcPath string, destDir
 
 }
 
-//根据一个文件夹路径，依次创建，找到最后一个文件夹的matter，如果中途出错，返回err. 如果存在了那就直接返回即可。
+// 根据一个文件夹路径，依次创建，找到最后一个文件夹的matter，如果中途出错，返回err. 如果存在了那就直接返回即可。
 func (this *MatterService) CreateDirectories(request *http.Request, user *User, dirPath string) *Matter {
 
 	dirPath = path.Clean(dirPath)
@@ -1043,7 +1043,7 @@ func (this *MatterService) CreateDirectories(request *http.Request, user *User, 
 		return NewRootMatter(user)
 	}
 
-	//ignore the last slash.
+	// ignore the last slash.
 	dirPath = strings.TrimSuffix(dirPath, "/")
 
 	folders := strings.Split(dirPath, "/")
@@ -1052,9 +1052,9 @@ func (this *MatterService) CreateDirectories(request *http.Request, user *User, 
 		panic(result.BadRequestI18n(request, i18n.MatterDepthExceedLimit, len(folders), MATTER_NAME_MAX_DEPTH))
 	}
 
-	//validate every matter name.
+	// validate every matter name.
 	for k, name := range folders {
-		//first element is ""
+		// first element is ""
 		if k != 0 {
 			CheckMatterName(request, name)
 		}
@@ -1063,7 +1063,7 @@ func (this *MatterService) CreateDirectories(request *http.Request, user *User, 
 	var dirMatter *Matter
 	for k, name := range folders {
 
-		//ignore the first element.
+		// ignore the first element.
 		if k == 0 {
 			dirMatter = NewRootMatter(user)
 			continue
@@ -1075,14 +1075,14 @@ func (this *MatterService) CreateDirectories(request *http.Request, user *User, 
 	return dirMatter
 }
 
-//wrap a matter. put its parent.
+// wrap a matter. put its parent.
 func (this *MatterService) WrapParentDetail(request *http.Request, matter *Matter) *Matter {
 
 	if matter == nil {
 		panic(result.BadRequest("matter cannot be nil."))
 	}
 
-	//when self not root.
+	// when self not root.
 	if matter.Uuid != MATTER_ROOT {
 
 		puuid := matter.Puuid
@@ -1098,7 +1098,7 @@ func (this *MatterService) WrapParentDetail(request *http.Request, matter *Matte
 	return matter
 }
 
-//wrap a matter ,put its children
+// wrap a matter ,put its children
 func (this *MatterService) WrapChildrenDetail(request *http.Request, matter *Matter) {
 
 	if matter == nil {
@@ -1117,13 +1117,13 @@ func (this *MatterService) WrapChildrenDetail(request *http.Request, matter *Mat
 
 }
 
-//fetch a matter's detail with parent info.
+// fetch a matter's detail with parent info.
 func (this *MatterService) Detail(request *http.Request, uuid string) *Matter {
 	matter := this.matterDao.CheckByUuid(uuid)
 	return this.WrapParentDetail(request, matter)
 }
 
-//crawl a url to dirMatter
+// crawl a url to dirMatter
 func (this *MatterService) AtomicCrawl(request *http.Request, url string, filename string, user *User, dirMatter *Matter, privacy bool) *Matter {
 
 	if user == nil {
@@ -1145,14 +1145,14 @@ func (this *MatterService) AtomicCrawl(request *http.Request, url string, filena
 		panic(result.BadRequest("filename cannot be null."))
 	}
 
-	//download from url.
+	// download from url.
 	resp, err := http.Get(url)
 	this.PanicError(err)
 
 	return this.Upload(request, resp.Body, user, dirMatter, filename, privacy)
 }
 
-//adjust a matter's path.
+// adjust a matter's path.
 func (this *MatterService) adjustPath(matter *Matter, parentMatter *Matter) {
 
 	if matter.Dir {
@@ -1160,14 +1160,14 @@ func (this *MatterService) adjustPath(matter *Matter, parentMatter *Matter) {
 		matter.Path = parentMatter.Path + "/" + matter.Name
 		matter = this.matterDao.Save(matter)
 
-		//adjust children.
+		// adjust children.
 		matters := this.matterDao.FindByPuuidAndUserUuid(matter.Uuid, matter.UserUuid, nil)
 		for _, m := range matters {
 			this.adjustPath(m, matter)
 		}
 
 	} else {
-		//delete caches.
+		// delete caches.
 		this.imageCacheDao.DeleteByMatterUuid(matter.Uuid)
 
 		matter.Path = parentMatter.Path + "/" + matter.Name
@@ -1176,14 +1176,14 @@ func (this *MatterService) adjustPath(matter *Matter, parentMatter *Matter) {
 
 }
 
-//delete someone's EyeblueTank files according to physics files.
+// delete someone's EyeblueTank files according to physics files.
 func (this *MatterService) DeleteByPhysics(request *http.Request, user *User) {
 
 	if user == nil {
 		panic(result.BadRequest("user cannot be nil."))
 	}
 
-	//scan user's file. scan level by level.
+	// scan user's file. scan level by level.
 	rootMatter := NewRootMatter(user)
 	this.deleteFolderByPhysics(request, rootMatter, user)
 
@@ -1191,11 +1191,11 @@ func (this *MatterService) DeleteByPhysics(request *http.Request, user *User) {
 
 func (this *MatterService) deleteFolderByPhysics(request *http.Request, dirMatter *Matter, user *User) {
 
-	//scan user's file. scan level by level.
+	// scan user's file. scan level by level.
 	this.matterDao.PageHandle(dirMatter.Uuid, user.Uuid, "", "", "", nil, nil, func(matter *Matter) {
 
 		if matter.Dir {
-			//delete children first.
+			// delete children first.
 			this.deleteFolderByPhysics(request, matter, user)
 		}
 
@@ -1207,7 +1207,7 @@ func (this *MatterService) deleteFolderByPhysics(request *http.Request, dirMatte
 	})
 }
 
-//scan someone's physics files to EyeblueTank
+// scan someone's physics files to EyeblueTank
 func (this *MatterService) ScanPhysics(request *http.Request, user *User) {
 
 	if user == nil {
@@ -1235,7 +1235,7 @@ func (this *MatterService) scanPhysicsFolder(request *http.Request, dirInfo os.F
 		return
 	}
 
-	//fetch all matters under this folder.
+	// fetch all matters under this folder.
 	_, matters := this.matterDao.PlainPage(0, 1000, dirMatter.Uuid, user.Uuid, "", "", "", nil, nil, nil)
 	nameMatterMap := make(map[string]*Matter)
 	for _, m := range matters {
@@ -1256,13 +1256,13 @@ func (this *MatterService) scanPhysicsFolder(request *http.Request, dirInfo os.F
 			continue
 		}
 
-		//find ther matter
+		// find ther matter
 		var matter *Matter
 		_, ok := nameMatterMap[name]
 		if ok {
-			//exits. check the basic info.
+			// exits. check the basic info.
 			matter = nameMatterMap[name]
-			//only check the fileSize.
+			// only check the fileSize.
 			if !matter.Dir {
 				if matter.Size != fileInfo.Size() {
 					this.logger.Info("update matter: %s size:%d -> %d", name, matter.Size, fileInfo.Size())
@@ -1270,7 +1270,7 @@ func (this *MatterService) scanPhysicsFolder(request *http.Request, dirInfo os.F
 				}
 			} else {
 
-				//recursive scan this folder.
+				// recursive scan this folder.
 				this.scanPhysicsFolder(request, fileInfo, matter, user)
 
 			}
@@ -1279,15 +1279,15 @@ func (this *MatterService) scanPhysicsFolder(request *http.Request, dirInfo os.F
 
 			if fileInfo.IsDir() {
 
-				//create folder.
+				// create folder.
 				matter = this.createDirectory(request, dirMatter, name, user)
 
-				//recursive scan this folder.
+				// recursive scan this folder.
 				this.scanPhysicsFolder(request, fileInfo, matter, user)
 
 			} else {
 
-				//not exist. add basic info.
+				// not exist. add basic info.
 				this.logger.Info("Create matter: %s size:%d", name, fileInfo.Size())
 				matter = this.createNonDirMatter(dirMatter, name, fileInfo.Size(), true, user)
 
@@ -1297,9 +1297,9 @@ func (this *MatterService) scanPhysicsFolder(request *http.Request, dirInfo os.F
 	}
 }
 
-//clean all the expired deleted matters
+// clean all the expired deleted matters
 func (this *MatterService) CleanExpiredDeletedMatters() {
-	//mock a request.
+	// mock a request.
 	request := &http.Request{}
 
 	preference := this.preferenceService.Fetch()
@@ -1314,7 +1314,7 @@ func (this *MatterService) CleanExpiredDeletedMatters() {
 			thenDate = util.FirstSecondOfDay(thenDate)
 		}
 
-		//first remove all the matter(not dir).
+		// first remove all the matter(not dir).
 		this.matterDao.PageHandle("", "", "", FALSE, TRUE, &thenDate, nil, func(matter *Matter) {
 			this.Delete(request, matter, user)
 		})
@@ -1326,7 +1326,7 @@ func (this *MatterService) CleanExpiredDeletedMatters() {
 			},
 		}
 
-		//remove all the deleted directories. sort by path.
+		// remove all the deleted directories. sort by path.
 		this.matterDao.PageHandle("", "", "", TRUE, TRUE, &thenDate, sortArray, func(matter *Matter) {
 			this.Delete(request, matter, user)
 		})

@@ -2,13 +2,13 @@ package rest
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/third"
-	"github.com/eyebluecn/tank/code/tool/util"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/third"
+	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ import (
 	"time"
 )
 
-//install apis. Only when installing period can be visited.
+// install apis. Only when installing period can be visited.
 type InstallController struct {
 	BaseController
 	uploadTokenDao    *UploadTokenDao
@@ -115,7 +115,7 @@ func (this *InstallController) openDbConnection(writer http.ResponseWriter, requ
 		mysqlPort = tmp
 	}
 
-	//log config
+	// log config
 	dbLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
@@ -125,7 +125,7 @@ func (this *InstallController) openDbConnection(writer http.ResponseWriter, requ
 			Colorful:                  false,         // colorful print
 		},
 	)
-	//table name strategy
+	// table name strategy
 	namingStrategy := core.CONFIG.NamingStrategy()
 
 	if dbType == "sqlite" {
@@ -139,7 +139,7 @@ func (this *InstallController) openDbConnection(writer http.ResponseWriter, requ
 			core.LOGGER.Panic("failed to connect sqlite database")
 		}
 
-		//sqlite lock issue. https://gist.github.com/mrnugget/0eda3b2b53a70fa4a894
+		// sqlite lock issue. https://gist.github.com/mrnugget/0eda3b2b53a70fa4a894
 		phyDb, err := db.DB()
 		phyDb.SetMaxOpenConns(1)
 
@@ -176,7 +176,7 @@ func (this *InstallController) closeDbConnection(db *gorm.DB) {
 // (tableName, exists, allFields, missingFields)
 func (this *InstallController) getTableMeta(gormDb *gorm.DB, entity interface{}) (string, bool, []*InstallFieldInfo, []*InstallFieldInfo) {
 
-	//get all useful fields from model.
+	// get all useful fields from model.
 	entitySchema, err := schema.Parse(entity, &sync.Map{}, core.CONFIG.NamingStrategy())
 	this.PanicError(err)
 
@@ -200,12 +200,12 @@ func (this *InstallController) getTableMeta(gormDb *gorm.DB, entity interface{})
 	} else {
 
 		for _, field := range allFields {
-			//tag with `gorm:"-"` will be ""
+			// tag with `gorm:"-"` will be ""
 			if field.Name != "" {
 
 				database := gormDb.Migrator().CurrentDatabase()
 
-				//if sqlite
+				// if sqlite
 				if _, ok := gormDb.Dialector.(*sqlite.Dialector); ok {
 
 					if !gormDb.Migrator().HasColumn(tableName, field.Name) {
@@ -266,7 +266,7 @@ func (this *InstallController) validateTableMetaList(tableInfoList []*InstallTab
 
 }
 
-//Ping db.
+// Ping db.
 func (this *InstallController) Verify(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	db := this.openDbConnection(writer, request)
@@ -299,17 +299,17 @@ func (this *InstallController) CreateTable(writer http.ResponseWriter, request *
 	for _, iBase := range this.tableNames {
 
 		if _, ok := db.Dialector.(*sqlite.Dialector); ok {
-			//if sqlite. no need to set CHARSET.
+			// if sqlite. no need to set CHARSET.
 			err := db.AutoMigrate(iBase)
 			this.PanicError(err)
 		} else {
-			//use utf8 charset
+			// use utf8 charset
 			mysqlCharset := request.FormValue("mysqlCharset")
 			err := db.Set("gorm:table_options", fmt.Sprintf("CHARSET=%s", mysqlCharset)).AutoMigrate(iBase)
 			this.PanicError(err)
 		}
 
-		//complete the missing fields or create table.
+		// complete the missing fields or create table.
 		tableName, exist, allFields, missingFields := this.getTableMeta(db, iBase)
 		installTableInfos = append(installTableInfos, &InstallTableInfo{
 			Name:          tableName,
@@ -324,7 +324,7 @@ func (this *InstallController) CreateTable(writer http.ResponseWriter, request *
 
 }
 
-//get the list of admin.
+// get the list of admin.
 func (this *InstallController) AdminList(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	db := this.openDbConnection(writer, request)
@@ -342,7 +342,7 @@ func (this *InstallController) AdminList(writer http.ResponseWriter, request *ht
 	return this.Success(users)
 }
 
-//create admin
+// create admin
 func (this *InstallController) CreateAdmin(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	db := this.openDbConnection(writer, request)
@@ -351,7 +351,7 @@ func (this *InstallController) CreateAdmin(writer http.ResponseWriter, request *
 	adminUsername := request.FormValue("adminUsername")
 	adminPassword := request.FormValue("adminPassword")
 
-	//validate admin's username
+	// validate admin's username
 	if m, _ := regexp.MatchString(USERNAME_PATTERN, adminUsername); !m {
 		panic(result.BadRequestI18n(request, i18n.UsernameError))
 	}
@@ -360,7 +360,7 @@ func (this *InstallController) CreateAdmin(writer http.ResponseWriter, request *
 		panic(result.BadRequest(`admin's password at least 6 chars'`))
 	}
 
-	//check whether duplicate
+	// check whether duplicate
 	var count2 int64
 	db2 := db.Model(&User{}).Where("username = ?", adminUsername).Count(&count2)
 	this.PanicError(db2.Error)
@@ -388,7 +388,7 @@ func (this *InstallController) CreateAdmin(writer http.ResponseWriter, request *
 
 }
 
-//(if there is admin in db)Validate admin.
+// (if there is admin in db)Validate admin.
 func (this *InstallController) ValidateAdmin(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	db := this.openDbConnection(writer, request)
@@ -422,7 +422,7 @@ func (this *InstallController) ValidateAdmin(writer http.ResponseWriter, request
 
 }
 
-//Finish the installation
+// Finish the installation
 func (this *InstallController) Finish(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	dbType := request.FormValue("dbType")
@@ -440,15 +440,15 @@ func (this *InstallController) Finish(writer http.ResponseWriter, request *http.
 		mysqlPort = tmp
 	}
 
-	//Recheck the db connection
+	// Recheck the db connection
 	db := this.openDbConnection(writer, request)
 	defer this.closeDbConnection(db)
 
-	//Recheck the integrity of tables.
+	// Recheck the integrity of tables.
 	tableMetaList := this.getTableMetaList(db)
 	this.validateTableMetaList(tableMetaList)
 
-	//At least one admin
+	// At least one admin
 	var count1 int64
 	db1 := db.Model(&User{}).Where("role = ?", USER_ROLE_ADMINISTRATOR).Count(&count1)
 	this.PanicError(db1.Error)
@@ -456,10 +456,10 @@ func (this *InstallController) Finish(writer http.ResponseWriter, request *http.
 		panic(result.BadRequest(`please config at least one admin user`))
 	}
 
-	//announce the config to write config to tank.json
+	// announce the config to write config to fart.json
 	core.CONFIG.FinishInstall(dbType, mysqlPort, mysqlHost, mysqlSchema, mysqlUsername, mysqlPassword, mysqlCharset)
 
-	//announce the context to broadcast the installation news to bean.
+	// announce the context to broadcast the installation news to bean.
 	core.CONTEXT.InstallOk()
 
 	return this.Success("OK")

@@ -1,14 +1,14 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"github.com/robfig/cron/v3"
 	"net/http"
 )
 
 // system tasks service
-//@Service
+// @Service
 type TaskService struct {
 	BaseBean
 	footprintService  *FootprintService
@@ -17,7 +17,7 @@ type TaskService struct {
 	matterService     *MatterService
 	userDao           *UserDao
 
-	//whether scan task is running
+	// whether scan task is running
 	scanTaskRunning bool
 	scanTaskCron    *cron.Cron
 }
@@ -52,10 +52,10 @@ func (this *TaskService) Init() {
 	this.scanTaskRunning = false
 }
 
-//init the clean footprint task.
+// init the clean footprint task.
 func (this *TaskService) InitCleanFootprintTask() {
 
-	//use standard cron expression. 5 fields. ()
+	// use standard cron expression. 5 fields. ()
 	expression := "10 0 * * *"
 	cronJob := cron.New()
 	_, err := cronJob.AddFunc(expression, this.footprintService.CleanOldData)
@@ -65,7 +65,7 @@ func (this *TaskService) InitCleanFootprintTask() {
 	this.logger.Info("[cron job] Every day 00:10 delete Footprint data of 8 days ago.")
 }
 
-//init the elt task.
+// init the elt task.
 func (this *TaskService) InitEtlTask() {
 
 	expression := "5 0 * * *"
@@ -77,7 +77,7 @@ func (this *TaskService) InitEtlTask() {
 	this.logger.Info("[cron job] Everyday 00:05 ETL dashboard data.")
 }
 
-//init the clean deleted matters task.
+// init the clean deleted matters task.
 func (this *TaskService) InitCleanDeletedMattersTask() {
 
 	expression := "0 1 * * *"
@@ -89,7 +89,7 @@ func (this *TaskService) InitCleanDeletedMattersTask() {
 	this.logger.Info("[cron job] Everyday 01:00 Clean deleted matters.")
 }
 
-//scan task.
+// scan task.
 func (this *TaskService) doScanTask() {
 
 	if this.scanTaskRunning {
@@ -116,11 +116,11 @@ func (this *TaskService) doScanTask() {
 		return
 	}
 
-	//mock a request.
+	// mock a request.
 	request := &http.Request{}
 
 	if scanConfig.Scope == SCAN_SCOPE_ALL {
-		//scan all user's root folder.
+		// scan all user's root folder.
 		this.userDao.PageHandle("", "", func(user *User) {
 
 			core.RunWithRecovery(func() {
@@ -133,7 +133,7 @@ func (this *TaskService) doScanTask() {
 		})
 
 	} else if scanConfig.Scope == SCAN_SCOPE_CUSTOM {
-		//scan custom user's folder.
+		// scan custom user's folder.
 
 		for _, username := range scanConfig.Usernames {
 			user := this.userDao.FindByUsername(username)
@@ -155,7 +155,7 @@ func (this *TaskService) doScanTask() {
 
 }
 
-//init the scan task.
+// init the scan task.
 func (this *TaskService) InitScanTask() {
 
 	if this.scanTaskCron != nil {
@@ -186,16 +186,16 @@ func (this *TaskService) InitScanTask() {
 
 func (this *TaskService) Bootstrap() {
 
-	//load the clean footprint task.
+	// load the clean footprint task.
 	this.InitCleanFootprintTask()
 
-	//load the etl task.
+	// load the etl task.
 	this.InitEtlTask()
 
-	//load the clean deleted matters task.
+	// load the clean deleted matters task.
 	this.InitCleanDeletedMattersTask()
 
-	//load the scan task.
+	// load the scan task.
 	this.InitScanTask()
 
 }

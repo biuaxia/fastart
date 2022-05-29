@@ -20,3 +20,9 @@
 
 # Golang
 go.sum
+
+# Program
+tmp/
+log/
+fart
+/*.exe

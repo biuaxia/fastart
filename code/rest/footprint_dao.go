@@ -1,12 +1,12 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"gorm.io/gorm"
 
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"time"
 )
 
@@ -14,7 +14,7 @@ type FootprintDao struct {
 	BaseDao
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *FootprintDao) FindByUuid(uuid string) *Footprint {
 	var entity = &Footprint{}
 	db := core.CONTEXT.GetDB().Where("uuid = ?", uuid).First(entity)
@@ -28,7 +28,7 @@ func (this *FootprintDao) FindByUuid(uuid string) *Footprint {
 	return entity
 }
 
-//find by uuid. if not found panic NotFound error
+// find by uuid. if not found panic NotFound error
 func (this *FootprintDao) CheckByUuid(uuid string) *Footprint {
 	entity := this.FindByUuid(uuid)
 	if entity == nil {
@@ -144,7 +144,7 @@ func (this *FootprintDao) DeleteByUserUuid(userUuid string) {
 
 }
 
-//System cleanup.
+// System cleanup.
 func (this *FootprintDao) Cleanup() {
 	this.logger.Info("[FootprintDao][DownloadTokenDao] clean up. Delete all Footprint")
 	db := core.CONTEXT.GetDB().Where("uuid is not null").Delete(Footprint{})

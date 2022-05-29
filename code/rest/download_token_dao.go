@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"time"
 )
 
@@ -11,7 +11,7 @@ type DownloadTokenDao struct {
 	BaseDao
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *DownloadTokenDao) FindByUuid(uuid string) *DownloadToken {
 	var entity = &DownloadToken{}
 	db := core.CONTEXT.GetDB().Where("uuid = ?", uuid).First(entity)
@@ -26,7 +26,7 @@ func (this *DownloadTokenDao) FindByUuid(uuid string) *DownloadToken {
 
 }
 
-//find by uuid. if not found panic NotFound error
+// find by uuid. if not found panic NotFound error
 func (this *DownloadTokenDao) CheckByUuid(uuid string) *DownloadToken {
 	entity := this.FindByUuid(uuid)
 	if entity == nil {

@@ -2,8 +2,8 @@ package test
 
 import (
 	"bytes"
-	"github.com/eyebluecn/tank/code/tool/dav"
-	"github.com/eyebluecn/tank/code/tool/dav/xml"
+	"github.com/biuaxia/fastart/code/tool/dav"
+	"github.com/biuaxia/fastart/code/tool/dav/xml"
 	"testing"
 	"time"
 )

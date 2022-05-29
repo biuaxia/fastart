@@ -3,13 +3,13 @@ package rest
 import (
 	"encoding/json"
 
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"net/http"
 	"time"
 )
 
-//@Service
+// @Service
 type FootprintService struct {
 	BaseBean
 	footprintDao *FootprintDao
@@ -38,23 +38,23 @@ func (this *FootprintService) Detail(uuid string) *Footprint {
 	return footprint
 }
 
-//log a request.
+// log a request.
 func (this *FootprintService) Trace(request *http.Request, duration time.Duration, success bool) {
 
 	params := make(map[string][]string)
 
-	//POST params
+	// POST params
 	values := request.PostForm
 	for key, val := range values {
 		params[key] = val
 	}
-	//GET params
+	// GET params
 	values1 := request.URL.Query()
 	for key, val := range values1 {
 		params[key] = val
 	}
 
-	//ignore password.
+	// ignore password.
 	for key, _ := range params {
 		if key == core.PASSWORD_KEY || key == "password" || key == "adminPassword" {
 			params[key] = []string{"******"}
@@ -76,7 +76,7 @@ func (this *FootprintService) Trace(request *http.Request, duration time.Duratio
 		Success: success,
 	}
 
-	//if db not config just print content.
+	// if db not config just print content.
 	if core.CONFIG.Installed() {
 		user := this.findUser(request)
 		userUuid := ""

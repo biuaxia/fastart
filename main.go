@@ -1,14 +1,12 @@
 package main
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/support"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/support"
 	_ "gorm.io/driver/mysql"
 )
 
 func main() {
-
-	core.APPLICATION = &support.TankApplication{}
+	core.APPLICATION = &support.FartApplication{}
 	core.APPLICATION.Start()
-
 }

@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	jsoniter "github.com/json-iterator/go"
 	"net/http"
 	"strconv"
@@ -62,7 +62,7 @@ func (this *PreferenceController) RegisterRoutes() map[string]func(writer http.R
 	return routeMap
 }
 
-//ping the application. Return current version.
+// ping the application. Return current version.
 func (this *PreferenceController) Ping(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	return this.Success(core.VERSION)
@@ -76,7 +76,7 @@ func (this *PreferenceController) Fetch(writer http.ResponseWriter, request *htt
 	return this.Success(preference)
 }
 
-//edit basic info.
+// edit basic info.
 func (this *PreferenceController) Edit(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	name := request.FormValue("name")
@@ -155,7 +155,7 @@ func (this *PreferenceController) Edit(writer http.ResponseWriter, request *http
 
 	preference = this.preferenceService.Save(preference)
 
-	//if changed the bin strategy. then trigger once.
+	// if changed the bin strategy. then trigger once.
 	if oldDeletedKeepDays != deletedKeepDays {
 		this.matterService.CleanExpiredDeletedMatters()
 	}
@@ -163,7 +163,7 @@ func (this *PreferenceController) Edit(writer http.ResponseWriter, request *http
 	return this.Success(preference)
 }
 
-//edit preview config.
+// edit preview config.
 func (this *PreferenceController) EditPreviewConfig(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	previewConfig := request.FormValue("previewConfig")
@@ -191,14 +191,14 @@ func (this *PreferenceController) EditScanConfig(writer http.ResponseWriter, req
 		panic(err)
 	}
 
-	//validate the scan config.
+	// validate the scan config.
 	if scanConfig.Enable {
-		//validate cron.
+		// validate cron.
 		if !util.ValidateCron(scanConfig.Cron) {
 			panic(result.CustomWebResultI18n(request, result.SHARE_CODE_ERROR, i18n.CronValidateError))
 		}
 
-		//validate scope.
+		// validate scope.
 		if scanConfig.Scope == SCAN_SCOPE_CUSTOM {
 			if len(scanConfig.Usernames) == 0 {
 				panic(result.BadRequest("scope cannot be null"))
@@ -213,20 +213,20 @@ func (this *PreferenceController) EditScanConfig(writer http.ResponseWriter, req
 	preference.ScanConfig = scanConfigStr
 	preference = this.preferenceService.Save(preference)
 
-	//reinit the scan task.
+	// reinit the scan task.
 	this.taskService.InitScanTask()
 
 	return this.Success(preference)
 }
 
-//scan immediately according the current config.
+// scan immediately according the current config.
 func (this *PreferenceController) ScanOnce(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	this.taskService.doScanTask()
 	return this.Success("OK")
 }
 
-//cleanup system data.
+// cleanup system data.
 func (this *PreferenceController) SystemCleanup(writer http.ResponseWriter, request *http.Request) *result.WebResult {
 
 	user := this.checkUser(request)
@@ -236,7 +236,7 @@ func (this *PreferenceController) SystemCleanup(writer http.ResponseWriter, requ
 		panic(result.BadRequest("password error"))
 	}
 
-	//this will trigger every bean to cleanup.
+	// this will trigger every bean to cleanup.
 	core.CONTEXT.Cleanup()
 
 	return this.Success("OK")

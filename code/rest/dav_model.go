@@ -2,23 +2,23 @@ package rest
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/tool/dav"
-	"github.com/eyebluecn/tank/code/tool/dav/xml"
+	"github.com/biuaxia/fastart/code/tool/dav"
+	"github.com/biuaxia/fastart/code/tool/dav/xml"
 	"net/http"
 	"path"
 	"strconv"
 )
 
-//webdav url prefix.
+// webdav url prefix.
 var WEBDAV_PREFIX = "/api/dav"
 
-//live prop.
+// live prop.
 type LiveProp struct {
 	findFn func(user *User, matter *Matter) string
 	dir    bool
 }
 
-//all live prop map.
+// all live prop map.
 var LivePropMap = map[xml.Name]LiveProp{
 	{Space: "DAV:", Local: "resourcetype"}: {
 		findFn: func(user *User, matter *Matter) string {

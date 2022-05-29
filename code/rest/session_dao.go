@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"time"
 )
 
@@ -11,7 +11,7 @@ type SessionDao struct {
 	BaseDao
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *SessionDao) FindByUuid(uuid string) *Session {
 	var entity = &Session{}
 	db := core.CONTEXT.GetDB().Where("uuid = ?", uuid).First(entity)
@@ -25,7 +25,7 @@ func (this *SessionDao) FindByUuid(uuid string) *Session {
 	return entity
 }
 
-//find by uuid. if not found panic NotFound error
+// find by uuid. if not found panic NotFound error
 func (this *SessionDao) CheckByUuid(uuid string) *Session {
 	entity := this.FindByUuid(uuid)
 	if entity == nil {
@@ -74,7 +74,7 @@ func (this *SessionDao) DeleteByUserUuid(userUuid string) {
 
 }
 
-//System cleanup.
+// System cleanup.
 func (this *SessionDao) Cleanup() {
 	this.logger.Info("[SessionDao] clean up. Delete all Session")
 	db := core.CONTEXT.GetDB().Where("uuid is not null").Delete(Session{})

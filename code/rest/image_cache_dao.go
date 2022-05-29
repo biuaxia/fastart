@@ -2,11 +2,11 @@ package rest
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
-	"github.com/eyebluecn/tank/code/tool/uuid"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fastart/code/tool/uuid"
 	"gorm.io/gorm"
 	"os"
 	"path/filepath"
@@ -17,7 +17,7 @@ type ImageCacheDao struct {
 	BaseDao
 }
 
-//find by uuid. if not found return nil.
+// find by uuid. if not found return nil.
 func (this *ImageCacheDao) FindByUuid(uuid string) *ImageCache {
 	var entity = &ImageCache{}
 	db := core.CONTEXT.GetDB().Where("uuid = ?", uuid).First(entity)
@@ -31,7 +31,7 @@ func (this *ImageCacheDao) FindByUuid(uuid string) *ImageCache {
 	return entity
 }
 
-//find by uuid. if not found panic NotFound error
+// find by uuid. if not found panic NotFound error
 func (this *ImageCacheDao) CheckByUuid(uuid string) *ImageCache {
 	entity := this.FindByUuid(uuid)
 	if entity == nil {
@@ -141,18 +141,18 @@ func (this *ImageCacheDao) deleteFileAndDir(imageCache *ImageCache) {
 
 	dirPath := filepath.Dir(filePath)
 
-	//delete file from disk.
+	// delete file from disk.
 	err := os.Remove(filePath)
 	if err != nil {
 		this.logger.Error(fmt.Sprintf("error while deleting %s from disk %s", filePath, err.Error()))
 	}
 
-	//if this level is empty. Delete the directory
+	// if this level is empty. Delete the directory
 	util.DeleteEmptyDirRecursive(dirPath)
 
 }
 
-//delete a file from db and disk.
+// delete a file from db and disk.
 func (this *ImageCacheDao) Delete(imageCache *ImageCache) {
 
 	db := core.CONTEXT.GetDB().Delete(&imageCache)
@@ -162,7 +162,7 @@ func (this *ImageCacheDao) Delete(imageCache *ImageCache) {
 
 }
 
-//delete all the cache of a matter.
+// delete all the cache of a matter.
 func (this *ImageCacheDao) DeleteByMatterUuid(matterUuid string) {
 
 	var wp = &builder.WherePair{}
@@ -173,11 +173,11 @@ func (this *ImageCacheDao) DeleteByMatterUuid(matterUuid string) {
 	db := core.CONTEXT.GetDB().Where(wp.Query, wp.Args).Find(&imageCaches)
 	this.PanicError(db.Error)
 
-	//delete from db.
+	// delete from db.
 	db = core.CONTEXT.GetDB().Where(wp.Query, wp.Args).Delete(ImageCache{})
 	this.PanicError(db.Error)
 
-	//delete from disk.
+	// delete from disk.
 	for _, imageCache := range imageCaches {
 		this.deleteFileAndDir(imageCache)
 	}
@@ -208,7 +208,7 @@ func (this *ImageCacheDao) SizeBetweenTime(startTime time.Time, endTime time.Tim
 	return size
 }
 
-//System cleanup.
+// System cleanup.
 func (this *ImageCacheDao) Cleanup() {
 	this.logger.Info("[ImageCacheDao]clean up. Delete all ImageCache ")
 	db := core.CONTEXT.GetDB().Where("uuid is not null").Delete(ImageCache{})

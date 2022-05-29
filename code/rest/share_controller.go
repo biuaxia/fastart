@@ -1,11 +1,11 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/i18n"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/i18n"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"net/http"
 	"strconv"
 	"strings"
@@ -271,13 +271,17 @@ func (this *ShareController) Browse(writer http.ResponseWriter, request *http.Re
 	shareUuid := request.FormValue("shareUuid")
 	code := request.FormValue("code")
 
-	//puuid can be "root"
+	// puuid can be "root"
 	puuid := request.FormValue("puuid")
 	rootUuid := request.FormValue("rootUuid")
 
 	user := this.findUser(request)
 	share := this.shareService.CheckShare(request, shareUuid, code, user)
 	bridges := this.bridgeDao.FindByShareUuid(share.Uuid)
+	shareOwner := this.userDao.FindByUuid(share.UserUuid)
+	if shareOwner.Status == USER_STATUS_DISABLED {
+		panic(result.BadRequestI18n(request, i18n.UserDisabled))
+	}
 
 	if puuid == MATTER_ROOT {
 
@@ -300,21 +304,21 @@ func (this *ShareController) Browse(writer http.ResponseWriter, request *http.Re
 
 	} else {
 
-		//if root. No need to validate.
+		// if root. No need to validate.
 		if puuid == rootUuid {
 			dirMatter := this.matterDao.CheckByUuid(puuid)
 			share.DirMatter = dirMatter
 		} else {
 			dirMatter := this.matterService.Detail(request, puuid)
 
-			//check whether shareRootMatter is being sharing
+			// check whether shareRootMatter is being sharing
 			shareRootMatter := this.matterDao.CheckByUuid(rootUuid)
 			if !shareRootMatter.Dir {
 				panic(result.BadRequestI18n(request, i18n.MatterDestinationMustDirectory))
 			}
 			this.bridgeDao.CheckByShareUuidAndMatterUuid(share.Uuid, shareRootMatter.Uuid)
 
-			//stop at rootUuid
+			// stop at rootUuid
 			find := false
 			parentMatter := dirMatter.Parent
 			for parentMatter != nil {
@@ -351,7 +355,7 @@ func (this *ShareController) Zip(writer http.ResponseWriter, request *http.Reque
 
 	if puuid == MATTER_ROOT {
 
-		//download all things.
+		// download all things.
 		share := this.shareService.CheckShare(request, shareUuid, code, user)
 		bridges := this.bridgeDao.FindByShareUuid(share.Uuid)
 		var matterUuids []string
@@ -363,7 +367,7 @@ func (this *ShareController) Zip(writer http.ResponseWriter, request *http.Reque
 
 	} else {
 
-		//download a folder.
+		// download a folder.
 		matter := this.matterDao.CheckByUuid(puuid)
 		this.shareService.ValidateMatter(request, shareUuid, code, user, rootUuid, matter)
 		this.matterService.DownloadZip(writer, request, []*Matter{matter})

@@ -2,12 +2,12 @@ package rest
 
 import (
 	"fmt"
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/dav"
-	"github.com/eyebluecn/tank/code/tool/dav/xml"
-	"github.com/eyebluecn/tank/code/tool/result"
-	"github.com/eyebluecn/tank/code/tool/util"
-	"github.com/eyebluecn/tank/code/tool/webdav"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/dav"
+	"github.com/biuaxia/fastart/code/tool/dav/xml"
+	"github.com/biuaxia/fastart/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/util"
+	"github.com/biuaxia/fastart/code/tool/webdav"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -24,7 +24,7 @@ import (
  * refer: golang.org/x/net/webdav
  * test machine: http://www.webdav.org/neon/litmus/
  */
-//@Service
+// @Service
 type DavService struct {
 	BaseBean
 	matterDao     *MatterDao
@@ -49,7 +49,7 @@ func (this *DavService) Init() {
 	this.lockSystem = webdav.NewMemLS()
 }
 
-//get the depth in header. Not support infinity yet.
+// get the depth in header. Not support infinity yet.
 func (this *DavService) ParseDepth(request *http.Request) int {
 
 	depth := 1
@@ -88,7 +88,7 @@ func (this *DavService) makePropstatResponse(href string, pstats []dav.Propstat)
 	return &resp
 }
 
-//fetch a matter's []dav.Propstat
+// fetch a matter's []dav.Propstat
 func (this *DavService) PropstatsFromXmlNames(user *User, matter *Matter, xmlNames []xml.Name) []dav.Propstat {
 
 	propstats := make([]dav.Propstat, 0)
@@ -97,7 +97,7 @@ func (this *DavService) PropstatsFromXmlNames(user *User, matter *Matter, xmlNam
 	var notFoundProperties []dav.Property
 
 	for _, xmlName := range xmlNames {
-		//TODO: deadprops not implement yet.
+		// TODO: deadprops not implement yet.
 
 		// Otherwise, it must either be a live property or we don't know it.
 		if liveProp := LivePropMap[xmlName]; liveProp.findFn != nil && (liveProp.dir || !matter.Dir) {
@@ -118,10 +118,10 @@ func (this *DavService) PropstatsFromXmlNames(user *User, matter *Matter, xmlNam
 				})
 			} else {
 
-				//only accept Space not null.
+				// only accept Space not null.
 				if xmlName.Space != "" {
 
-					//collect not found props
+					// collect not found props
 					notFoundProperties = append(notFoundProperties, dav.Property{
 						XMLName:  xmlName,
 						InnerXML: []byte(""),
@@ -169,7 +169,7 @@ func (this *DavService) Propstats(user *User, matter *Matter, propfind *dav.Prop
 		panic(result.BadRequest("TODO: propfind.Propname != nil "))
 	} else if propfind.Allprop != nil {
 
-		//TODO: if include other things. add to it.
+		// TODO: if include other things. add to it.
 		xmlNames := this.AllPropXmlNames(matter)
 
 		propstats = this.PropstatsFromXmlNames(user, matter, xmlNames)
@@ -182,7 +182,7 @@ func (this *DavService) Propstats(user *User, matter *Matter, propfind *dav.Prop
 
 }
 
-//list the directory.
+// list the directory.
 func (this *DavService) HandlePropfind(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	fmt.Printf("PROPFIND %s\n", subPath)
@@ -192,7 +192,7 @@ func (this *DavService) HandlePropfind(writer http.ResponseWriter, request *http
 
 	propfind := dav.ReadPropfind(request.Body)
 
-	//find the matter, if subPath is null, means the root directory.
+	// find the matter, if subPath is null, means the root directory.
 	matter := this.matterDao.CheckWithRootByPath(subPath, user)
 
 	var matters []*Matter
@@ -202,11 +202,11 @@ func (this *DavService) HandlePropfind(writer http.ResponseWriter, request *http
 		// len(matters) == 0 means empty directory
 		matters = this.matterDao.FindByPuuidAndUserUuidAndDeleted(matter.Uuid, user.Uuid, FALSE, nil)
 
-		//add this matter to head.
+		// add this matter to head.
 		matters = append([]*Matter{matter}, matters...)
 	}
 
-	//prepare a multiStatusWriter.
+	// prepare a multiStatusWriter.
 	multiStatusWriter := &dav.MultiStatusWriter{Writer: writer}
 
 	for _, matter := range matters {
@@ -228,7 +228,7 @@ func (this *DavService) HandlePropfind(writer http.ResponseWriter, request *http
 
 }
 
-//change the file's property
+// change the file's property
 func (this *DavService) HandleProppatch(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	fmt.Printf("PROPPATCH %s\n", subPath)
@@ -253,7 +253,7 @@ func (this *DavService) HandleProppatch(writer http.ResponseWriter, request *htt
 
 	fmt.Println("status:%v", status)
 
-	//prepare a multiStatusWriter.
+	// prepare a multiStatusWriter.
 	multiStatusWriter := &dav.MultiStatusWriter{Writer: writer}
 
 	propstats := make([]dav.Propstat, 0)
@@ -265,7 +265,7 @@ func (this *DavService) HandleProppatch(writer http.ResponseWriter, request *htt
 			if len(patch.Props) > 0 {
 				property := patch.Props[0]
 				if _, isPresent := propMap[property.XMLName.Local]; isPresent {
-					//delete the prop.
+					// delete the prop.
 					delete(propMap, property.XMLName.Local)
 				}
 			}
@@ -296,25 +296,25 @@ func (this *DavService) HandleProppatch(writer http.ResponseWriter, request *htt
 
 }
 
-//handle download
+// handle download
 func (this *DavService) HandleGetHeadPost(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	fmt.Printf("GET %s\n", subPath)
 
 	matter := this.matterDao.CheckWithRootByPath(subPath, user)
 
-	//if this is a Directory, it means Propfind
+	// if this is a Directory, it means Propfind
 	if matter.Dir {
 		this.HandlePropfind(writer, request, user, subPath)
 		return
 	}
 
-	//download a file.
+	// download a file.
 	this.matterService.DownloadFile(writer, request, matter.AbsolutePath(), matter.Name, false)
 
 }
 
-//upload a file
+// upload a file
 func (this *DavService) HandlePut(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	fmt.Printf("PUT %s\n", subPath)
@@ -327,9 +327,9 @@ func (this *DavService) HandlePut(writer http.ResponseWriter, request *http.Requ
 	release, status, err := this.confirmLocks(request, reqPath, "")
 	if err != nil {
 
-		//if status == http.StatusLocked {
+		// if status == http.StatusLocked {
 		//	status = http.StatusPreconditionFailed
-		//}
+		// }
 		panic(result.StatusCodeWebResult(status, err.Error()))
 	}
 	if release != nil {
@@ -341,7 +341,7 @@ func (this *DavService) HandlePut(writer http.ResponseWriter, request *http.Requ
 
 	dirMatter := this.matterDao.CheckWithRootByPath(dirPath, user)
 
-	//if exist delete it.
+	// if exist delete it.
 	srcMatter := this.matterDao.findByUserUuidAndPath(user.Uuid, subPath)
 	if srcMatter != nil {
 		this.matterService.AtomicDelete(request, srcMatter, user)
@@ -349,12 +349,12 @@ func (this *DavService) HandlePut(writer http.ResponseWriter, request *http.Requ
 
 	this.matterService.Upload(request, request.Body, user, dirMatter, filename, true)
 
-	//set the status code 201
+	// set the status code 201
 	writer.WriteHeader(http.StatusCreated)
 
 }
 
-//delete file
+// delete file
 func (this *DavService) HandleDelete(w http.ResponseWriter, r *http.Request, user *User, subPath string) {
 
 	fmt.Printf("DELETE %s\n", subPath)
@@ -376,18 +376,18 @@ func (this *DavService) HandleDelete(w http.ResponseWriter, r *http.Request, use
 	this.matterService.AtomicDelete(r, matter, user)
 }
 
-//crate a directory
+// crate a directory
 func (this *DavService) HandleMkcol(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	fmt.Printf("MKCOL %s\n", subPath)
 
-	//the body of MKCOL request MUST be empty. (RFC2518:8.3.1)
+	// the body of MKCOL request MUST be empty. (RFC2518:8.3.1)
 	bodyBytes, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		fmt.Println("occur error when reading body: " + err.Error())
 	} else {
 		if len(bodyBytes) != 0 {
-			//throw conflict error
+			// throw conflict error
 			panic(result.CustomWebResult(result.UNSUPPORTED_MEDIA_TYPE, fmt.Sprintf("%s MKCOL should NO body", subPath)))
 		}
 	}
@@ -397,17 +397,17 @@ func (this *DavService) HandleMkcol(writer http.ResponseWriter, request *http.Re
 
 	dirMatter := this.matterDao.FindWithRootByPath(dirPath, user)
 	if dirMatter == nil {
-		//throw conflict error
+		// throw conflict error
 		panic(result.CustomWebResult(result.CONFLICT, fmt.Sprintf("%s not exist", dirPath)))
 	}
 
-	//check whether col exists. (RFC2518:8.3.1)
+	// check whether col exists. (RFC2518:8.3.1)
 	dbMatter := this.matterDao.FindByUserUuidAndPuuidAndDirAndName(user.Uuid, dirMatter.Uuid, TRUE, thisDirName)
 	if dbMatter != nil {
 		panic(result.CustomWebResult(result.METHOD_NOT_ALLOWED, fmt.Sprintf("%s already exists", dirPath)))
 	}
 
-	//check whether file exists. (RFC2518:8.3.1)
+	// check whether file exists. (RFC2518:8.3.1)
 	fileMatter := this.matterDao.FindByUserUuidAndPuuidAndDirAndName(user.Uuid, dirMatter.Uuid, FALSE, thisDirName)
 	if fileMatter != nil {
 		panic(result.CustomWebResult(result.METHOD_NOT_ALLOWED, fmt.Sprintf("%s file already exists", dirPath)))
@@ -417,7 +417,7 @@ func (this *DavService) HandleMkcol(writer http.ResponseWriter, request *http.Re
 
 }
 
-//cors options
+// cors options
 func (this *DavService) HandleOptions(w http.ResponseWriter, r *http.Request, user *User, subPath string) {
 
 	fmt.Printf("OPTIONS %s\n", subPath)
@@ -439,7 +439,7 @@ func (this *DavService) HandleOptions(w http.ResponseWriter, r *http.Request, us
 
 }
 
-//prepare for moving or copying
+// prepare for moving or copying
 func (this *DavService) prepareMoveCopy(
 	writer http.ResponseWriter,
 	request *http.Request,
@@ -451,22 +451,22 @@ func (this *DavService) prepareMoveCopy(
 	destinationName string,
 	overwrite bool) {
 
-	//parse the destination.
+	// parse the destination.
 	destinationStr := request.Header.Get("Destination")
 
-	//parse Overwrite。
+	// parse Overwrite。
 	overwriteStr := request.Header.Get("Overwrite")
 
-	//destination path with prefix
+	// destination path with prefix
 	var fullDestinationPath string
-	//destination path without prefix
+	// destination path without prefix
 	var destinationPath string
 
 	if destinationStr == "" {
 		panic(result.BadRequest("Header Destination cannot be null"))
 	}
 
-	//if rename. not start with http
+	// if rename. not start with http
 	if strings.HasPrefix(destinationStr, WEBDAV_PREFIX) {
 		fullDestinationPath = destinationStr
 	} else {
@@ -478,10 +478,10 @@ func (this *DavService) prepareMoveCopy(
 		fullDestinationPath = destinationUrl.Path
 	}
 
-	//clean the relative path. eg. /a/b/../ => /a/
+	// clean the relative path. eg. /a/b/../ => /a/
 	fullDestinationPath = path.Clean(fullDestinationPath)
 
-	//clean the prefix
+	// clean the prefix
 	pattern := fmt.Sprintf(`^%s(.*)$`, WEBDAV_PREFIX)
 	reg := regexp.MustCompile(pattern)
 	strs := reg.FindStringSubmatch(fullDestinationPath)
@@ -500,22 +500,22 @@ func (this *DavService) prepareMoveCopy(
 		overwrite = true
 	}
 
-	//if not change return.
+	// if not change return.
 	if destinationPath == subPath {
 		return
 	}
 
-	//source matter
+	// source matter
 	srcMatter = this.matterDao.CheckWithRootByPath(subPath, user)
 
-	//if source matter is root.
+	// if source matter is root.
 	if srcMatter.Uuid == MATTER_ROOT {
 		panic(result.BadRequest("you cannot move the root directory"))
 	}
 
 	destDirMatter = this.matterDao.FindWithRootByPath(destinationDirPath, user)
 	if destDirMatter == nil {
-		//throw conflict error
+		// throw conflict error
 		panic(result.CustomWebResult(result.CONFLICT, fmt.Sprintf("%s not exist", destinationDirPath)))
 	}
 
@@ -523,7 +523,7 @@ func (this *DavService) prepareMoveCopy(
 
 }
 
-//move or rename.
+// move or rename.
 func (this *DavService) HandleMove(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	fmt.Printf("MOVE %s\n", subPath)
@@ -543,9 +543,9 @@ func (this *DavService) HandleMove(writer http.ResponseWriter, request *http.Req
 
 	srcMatter, destDirMatter, srcDirPath, destinationDirPath, destinationName, overwrite := this.prepareMoveCopy(writer, request, user, subPath)
 
-	//move to the new directory
+	// move to the new directory
 	if destinationDirPath == srcDirPath {
-		//if destination path not change. it means rename.
+		// if destination path not change. it means rename.
 		this.matterService.AtomicRename(request, srcMatter, destinationName, overwrite, user)
 	} else {
 		this.matterService.AtomicMove(request, srcMatter, destDirMatter, overwrite, user)
@@ -554,15 +554,15 @@ func (this *DavService) HandleMove(writer http.ResponseWriter, request *http.Req
 	this.logger.Info("finish moving %s => %s", subPath, destDirMatter.Path)
 
 	if overwrite {
-		//overwrite old. set the status code 204
+		// overwrite old. set the status code 204
 		writer.WriteHeader(http.StatusNoContent)
 	} else {
-		//copy new. set the status code 201
+		// copy new. set the status code 201
 		writer.WriteHeader(http.StatusCreated)
 	}
 }
 
-//copy file/directory
+// copy file/directory
 func (this *DavService) HandleCopy(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	fmt.Printf("COPY %s\n", subPath)
@@ -578,16 +578,16 @@ func (this *DavService) HandleCopy(writer http.ResponseWriter, request *http.Req
 		defer release()
 	}
 
-	//copy to the new directory
+	// copy to the new directory
 	this.matterService.AtomicCopy(request, srcMatter, destDirMatter, destinationName, overwrite, user)
 
 	this.logger.Info("finish copying %s => %s", subPath, destDirMatter.Path)
 
 	if overwrite {
-		//overwrite old. set the status code 204
+		// overwrite old. set the status code 204
 		writer.WriteHeader(http.StatusNoContent)
 	} else {
-		//copy new. set the status code 201
+		// copy new. set the status code 201
 		writer.WriteHeader(http.StatusCreated)
 	}
 
@@ -688,7 +688,7 @@ func (h *DavService) confirmLocks(r *http.Request, src, dst string) (release fun
 	return nil, http.StatusLocked, webdav.ErrLocked
 }
 
-//lock.
+// lock.
 func (this *DavService) HandleLock(w http.ResponseWriter, r *http.Request, user *User, subPath string) {
 
 	duration, err := webdav.ParseTimeout(r.Header.Get("Timeout"))
@@ -753,13 +753,13 @@ func (this *DavService) HandleLock(w http.ResponseWriter, r *http.Request, user 
 			panic(result.StatusCodeWebResult(http.StatusInternalServerError, err.Error()))
 		}
 		defer func() {
-			//when error occur, rollback.
-			//this.lockSystem.Unlock(now, token)
+			// when error occur, rollback.
+			// this.lockSystem.Unlock(now, token)
 		}()
 
 		// Create the resource if it didn't previously exist.
 		// ctx := r.Context()
-		//if _, err := this.FileSystem.Stat(ctx, subPath); err != nil {
+		// if _, err := this.FileSystem.Stat(ctx, subPath); err != nil {
 		//	f, err := h.FileSystem.OpenFile(ctx, reqPath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 		//	if err != nil {
 		//		// TODO: detect missing intermediate dirs and return http.StatusConflict?
@@ -767,7 +767,7 @@ func (this *DavService) HandleLock(w http.ResponseWriter, r *http.Request, user 
 		//	}
 		//	f.Close()
 		//	created = true
-		//}
+		// }
 
 		// http://www.webdav.org/specs/rfc4918.html#HEADER_Lock-Token says that the
 		// Lock-Token value is a Coded-URL. We add angle brackets.
@@ -785,7 +785,7 @@ func (this *DavService) HandleLock(w http.ResponseWriter, r *http.Request, user 
 
 }
 
-//unlock
+// unlock
 func (this *DavService) HandleUnlock(w http.ResponseWriter, r *http.Request, user *User, subPath string) {
 
 	// http://www.webdav.org/specs/rfc4918.html#HEADER_Lock-Token says that the
@@ -810,63 +810,63 @@ func (this *DavService) HandleUnlock(w http.ResponseWriter, r *http.Request, use
 	}
 }
 
-//hanle all the request.
+// hanle all the request.
 func (this *DavService) HandleDav(writer http.ResponseWriter, request *http.Request, user *User, subPath string) {
 
 	method := request.Method
 	if method == "OPTIONS" {
 
-		//cors option
+		// cors option
 		this.HandleOptions(writer, request, user, subPath)
 
 	} else if method == "GET" || method == "HEAD" || method == "POST" {
 
-		//get the detail of file. download
+		// get the detail of file. download
 		this.HandleGetHeadPost(writer, request, user, subPath)
 
 	} else if method == "DELETE" {
 
-		//delete file
+		// delete file
 		this.HandleDelete(writer, request, user, subPath)
 
 	} else if method == "PUT" {
 
-		//upload file
+		// upload file
 		this.HandlePut(writer, request, user, subPath)
 
 	} else if method == "MKCOL" {
 
-		//crate directory
+		// crate directory
 		this.HandleMkcol(writer, request, user, subPath)
 
 	} else if method == "COPY" {
 
-		//copy file/directory
+		// copy file/directory
 		this.HandleCopy(writer, request, user, subPath)
 
 	} else if method == "MOVE" {
 
-		//move/rename a file or directory
+		// move/rename a file or directory
 		this.HandleMove(writer, request, user, subPath)
 
 	} else if method == "LOCK" {
 
-		//lock
+		// lock
 		this.HandleLock(writer, request, user, subPath)
 
 	} else if method == "UNLOCK" {
 
-		//unlock
+		// unlock
 		this.HandleUnlock(writer, request, user, subPath)
 
 	} else if method == "PROPFIND" {
 
-		//list a directory
+		// list a directory
 		this.HandlePropfind(writer, request, user, subPath)
 
 	} else if method == "PROPPATCH" {
 
-		//change file's property.
+		// change file's property.
 		this.HandleProppatch(writer, request, user, subPath)
 
 	} else {

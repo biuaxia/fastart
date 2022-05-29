@@ -1,12 +1,12 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/util"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/util"
 	"time"
 )
 
-//@Service
+// @Service
 type DashboardService struct {
 	BaseBean
 	dashboardDao  *DashboardDao
@@ -50,7 +50,7 @@ func (this *DashboardService) Bootstrap() {
 
 	this.logger.Info("Immediately ETL dashboard data.")
 
-	//do the etl method now.
+	// do the etl method now.
 	go core.RunWithRecovery(this.Etl)
 }
 
@@ -71,7 +71,7 @@ func (this *DashboardService) etlOneDay(thenTime time.Time) {
 
 	this.logger.Info("ETL dashboard data from %s to %s", util.ConvertTimeToDateTimeString(startTime), util.ConvertTimeToDateTimeString(endTime))
 
-	//check whether the record has created.
+	// check whether the record has created.
 	dbDashboard := this.dashboardDao.FindByDt(dt)
 	if dbDashboard != nil {
 		this.logger.Info(" %s already exits. delete it and insert new one.", dt)

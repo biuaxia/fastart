@@ -2,14 +2,14 @@ package util
 
 import (
 	"archive/zip"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-//zip srcPath to destPath。
+// zip srcPath to destPath。
 func Zip(srcPath string, destPath string) error {
 
 	srcPath = UniformPath(srcPath)
@@ -62,7 +62,7 @@ func Zip(srcPath string, destPath string) error {
 			return
 		}
 
-		//only regular has things to write.
+		// only regular has things to write.
 		if !fileHeader.Mode().IsRegular() {
 			return nil
 		}

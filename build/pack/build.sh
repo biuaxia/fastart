@@ -1,15 +1,16 @@
 #!/bin/bash
+set -e
 
 ###########################################################################
 #
-#  Tank build script for Linux or MacOS
+#  Fart build script for Linux or MacOS
 #
 ###########################################################################
 
 #prepare the variables.
 
 # version name
-VERSION_NAME=tank-3.1.5
+VERSION_NAME=fart-1.0.1
 echo "VERSION_NAME: ${VERSION_NAME}"
 #  golang proxy
 GOPROXY=https://goproxy.cn
@@ -23,25 +24,25 @@ echo "GOPATH: ${GOPATH}"
 # eg. darwin
 GOOS=$(go env GOOS)
 echo "GOOS: ${GOOS}"
-# service dir eg. /data/tank/build/pack
+# service dir eg. /data/fart/build/pack
 PACK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo "PACK_DIR: ${PACK_DIR}"
-# build dir eg. /data/tank/build
+# build dir eg. /data/fart/build
 BUILD_DIR=$(dirname ${PACK_DIR})
 echo "BUILD_DIR: ${BUILD_DIR}"
-# project dir eg. /data/tank
+# project dir eg. /data/fart
 PROJECT_DIR=$(dirname ${BUILD_DIR})
 echo "PROJECT_DIR: ${PROJECT_DIR}"
 # final zip file name.
 FILE_NAME=${VERSION_NAME}.${GOOS}-${GOARCH}.tar.gz
 echo "FILE_NAME: ${FILE_NAME}"
-# zip dist dir eg. /data/tank/tmp/dist
+# zip dist dir eg. /data/fart/tmp/dist
 DIST_DIR=${PROJECT_DIR}/tmp/dist
 echo "DIST_DIR: ${DIST_DIR}"
-# component dir eg. /data/tank/tmp/dist/tank-x.x.x
+# component dir eg. /data/fart/tmp/dist/fart-x.x.x
 COMPONENT_DIR=${DIST_DIR}/${VERSION_NAME}
 echo "COMPONENT_DIR: ${COMPONENT_DIR}"
-# final dist path eg. /data/tank/tmp/dist/tank-x.x.x.darwin-amd64.tar.gz
+# final dist path eg. /data/fart/tmp/dist/fart-x.x.x.darwin-amd64.tar.gz
 DIST_PATH=${DIST_DIR}/${FILE_NAME}
 echo "DIST_PATH: ${DIST_PATH}"
 
@@ -58,8 +59,8 @@ else
     mkdir -p ${COMPONENT_DIR}
 fi
 
-echo "copying cmd tank"
-cp ./tank ${COMPONENT_DIR}
+echo "copying cmd fart"
+cp ./fart ${COMPONENT_DIR}
 
 echo "copying build"
 cp -r ${BUILD_DIR}/* ${COMPONENT_DIR}

@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"github.com/eyebluecn/tank/code/core"
-	"github.com/eyebluecn/tank/code/tool/builder"
-	"github.com/eyebluecn/tank/code/tool/result"
+	"github.com/biuaxia/fastart/code/core"
+	"github.com/biuaxia/fastart/code/tool/builder"
+	"github.com/biuaxia/fastart/code/tool/result"
 	"net/http"
 	"strconv"
 )
@@ -86,7 +86,7 @@ func (this *DashboardController) Page(writer http.ResponseWriter, request *http.
 }
 
 func (this *DashboardController) ActiveIpTop10(writer http.ResponseWriter, request *http.Request) *result.WebResult {
-	//TODO:
+	// TODO:
 	list := this.dashboardDao.ActiveIpTop10()
 	return this.Success(list)
 }

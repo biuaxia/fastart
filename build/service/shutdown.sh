@@ -2,7 +2,7 @@
 
 DIR="$( cd "$( dirname "$0"  )" && pwd  )"
 TANK_DIR=$(dirname $DIR)
-EXE_PATH=$TANK_DIR/tank
+EXE_PATH=$TANK_DIR/fart
 
 EDASPID=`ps -ef | grep "$EXE_PATH"|grep -v grep |head -n 1 | awk '{print $2}'`
 if [ -z $EDASPID ];
@@ -11,5 +11,5 @@ then
 else
         kill -9 $EDASPID
         echo $EXE_PATH
-        echo 'Shutdown tank successfully.'
+        echo 'Shutdown fart successfully.'
 fi
